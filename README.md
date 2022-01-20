@@ -1,2 +1,10 @@
 # Sensors_Deployment_in_LWSN
-This code allow you to deploy sensors in Linear Wireless Sensors Networks using Virtual Node proposed by Dr DOMGA Rodrige K.
+This code allow you to deploy sensors in Linear Wireless Sensors Networks <br/>
+using <strong>Virtual Node</strong> concept proposed by <strong>Dr DOMGA Rodrige K.</strong>
+
+<img src="./resultats_seq1.png" alt="GNU/Linux" width="300" height="280"/>
+
+# Pre-requisites
+<ul>
+  <li> import <strong>matplotlib</strong> module (pip install matplotlib)</li>
+</ul>
