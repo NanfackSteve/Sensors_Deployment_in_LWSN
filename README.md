@@ -1,4 +1,4 @@
-# Sensors_Deployment_in_LWSN
+# Sensor_Deployment_in_LWSN
 This code allow you to deploy sensors in Linear Wireless Sensors Networks <br/>
 using <strong>Virtual Node</strong> concept proposed by <strong>Dr DOMGA Rodrige K.</strong>
 
