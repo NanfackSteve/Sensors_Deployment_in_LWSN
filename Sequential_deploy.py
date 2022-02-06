@@ -1,6 +1,10 @@
 #!/bin/python3
+# -*-coding: utf-8-*
+
 import matplotlib.pyplot as plt
 from collections import OrderedDict
+
+# ------------------ Define Differents Line Style -------------------
 
 linestyles_dict = OrderedDict(
     [
@@ -25,12 +29,12 @@ class LWSN:
     """LWSN - Linear Wireless Sensors Network
 
     Args:
-        N: "Nombre de capteurs"
-        K: "Nombre de noeud Virtuel"
+        N: "Number of sensors"
+        K: "Number of Virtual Nodes"
     """
 
     def __init__(self, N, K):
-        """..."""
+        """initialize the LWSN with K and N"""
 
         self.K = K
         self.N = N
@@ -38,7 +42,7 @@ class LWSN:
         self.n = list([0] * K)
 
     def sensors_deployment(self, lambda_, alpha, p):
-        """Determine le nombre de capteurs de chaque noeud Virtuel"""
+        """Determines the number of sensors of each Virtual Node"""
 
         O = list([0] * self.K)
 
@@ -61,13 +65,13 @@ class LWSN:
     # -------------------------------------------------------------------
 
     def calculate_T(self, i, lambda_, p):
-        """Calcul du trafique d'un noeud virtuel"""
+        """Virtual Node Traffic calculation"""
 
         Ti = (lambda_ / (p + 1)) * ((p / (p + 1)) + (((-p) ** (i + 1)) / (p + 1)) + i)
         return Ti
 
     def calculate_O(self, i, lambda_, alpha, p):
-        """Calcul du nombre max d'operation d'un capteur"""
+        """Calculation of the maximum number of operations of a sensor"""
 
         Ti_bar = (
             self.T[i] / self.n[i]
@@ -106,7 +110,7 @@ class LWSN:
 
 if __name__ == "__main__":
 
-    # ------------------ Parametres d'Affichage -------------------
+    # ------------------ Display Settings -------------------
 
     colors = ["red", "blue", "green", "m", "orange"]
     symbols = ["o-", "h", "*-", "s", "p"]
@@ -119,7 +123,7 @@ if __name__ == "__main__":
     plt.ylim(0, 22)
     plt.ylabel(" Deployed Nodes")
 
-    # ------------------ Deploiement en fonction de Alpha --------------
+    # ------------------ Deployment based on Alpha --------------
 
     alpha_values = [0.0, 0.1, 0.4, 0.6, 1]
 
