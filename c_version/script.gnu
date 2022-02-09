@@ -1,6 +1,6 @@
 set title "Execution Time of Deployment Algorithm" 
 set xlabel "Sensors Deployed (N)"
-set yrange [0:0.23]
+#set yrange [0:0.23]
 set ylabel "Time (s)"
 set xrange [0:10500]
 # set label "Time" at 4242, 0.2 ecrire du texte a une coordonnee
