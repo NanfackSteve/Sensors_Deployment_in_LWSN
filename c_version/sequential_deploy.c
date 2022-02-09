@@ -64,9 +64,7 @@ void sensors_deployment(int Ni, int Ki, int lambda, float alpha, double p)
 
     // Calcul de Ti de chaq Bi
     for (i = 0; i < K; i++)
-    {
         T[i] = (lambda / (p + 1)) * ((p / (p + 1)) + (pow(-p, i + 1) / (p + 1)) + (i + 1));
-    }
 
     for (i = 0; i < K; i++)
         n[i] = 1; // Affectation d'1 capt dans chaq Bi
@@ -77,13 +75,7 @@ void sensors_deployment(int Ni, int Ki, int lambda, float alpha, double p)
     {
         // Calcul du Nbr d'Oper. Oi de chaq Bi
         for (i = 0; i < K; i++)
-        {
             O[i] = calculate_Oi(i, lambda, alpha, p);
-        }
-        printf("O = ");
-        for (i = 0; i < K; i++)
-            printf("%.4lf |", O[i]);
-        puts("\n");
 
         //Remise a 0
         maxO = 0;
