@@ -6,6 +6,18 @@ in his [thesis](https://tel.archives-ouvertes.fr/tel-03088530v2/document)
 <img src="./python_version/resultats_seq1.png" alt="GNU/Linux" width="300" height="280"/>
 
 ## Pre-requisites
+
+### --> For Python Version 
+
 <ul>
-  <li> import <strong>matplotlib</strong> module (pip install matplotlib)</li>
+  <li> import <strong>matplotlib</strong> module as <em>pip install matplotlib</em></li>
 </ul>
+
+### --> For C version 
+
+<ul>
+  <li> install <strong>plotutils</strong> as <em>sudo apt  install plotutils</em></li>
+  <li> install <strong>gnuplot-x11</strong> as <em>sudo apt  install gnuplot-x11</em></li>
+</ul>
+
+## How To use
