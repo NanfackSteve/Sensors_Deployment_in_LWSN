@@ -58,8 +58,8 @@ class LWSN:
                     virtual_node, lambda_, alpha, p
                 )
 
-            I = [i for i, o in enumerate(self.Oi) if o == max(self.Oi)]
-            i = max(I)
+            setI = [i for i, o in enumerate(self.Oi) if o == max(self.Oi)]
+            i = max(setI)
             self.n[i] = self.n[i] + 1
             remaining_sensors = remaining_sensors - 1
         return self.n
@@ -69,7 +69,9 @@ class LWSN:
     def calculate_T(self, i, lambda_, p):
         """Virtual Node Traffic calculation"""
 
-        Ti = (lambda_ / (p + 1)) * ((p / (p + 1)) + (((-p) ** (i + 1)) / (p + 1)) + i)
+        Ti = (lambda_ / (p + 1)) * (
+            (p / (p + 1)) + (((-p) ** (i + 1)) / (p + 1)) + (i + 1)
+        )
         return Ti
 
     def calculate_O(self, i, lambda_, alpha, p):
@@ -204,5 +206,8 @@ if __name__ == "__main__":
     colors = ["red", "blue", "green", "m", "orange", "black"]
     symbols = ["o-", "h", "*-", "s", "p"]
 
-    graphic_LWSN_deployment(symbols, colors)
-    # graphic_LWSN_LifeTime(symbols[4], colors[2])
+    # graphic_LWSN_deployment(symbols, colors)
+    graphic_LWSN_LifeTime(symbols[4], colors[2])
+    # Si = LWSN(30, 10)
+    # Si.sensors_deployment(1, 0.4, 0.5)
+    # print("Oi= ", Si.Oi)
