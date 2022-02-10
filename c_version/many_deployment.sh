@@ -13,7 +13,7 @@ do
     #recuperation du temps 
     filename=$(echo "datas_deploy_$i.dat")
     time=$(grep "time" ${filename} | cut -f 3 -d " ") 
-    echo -e "$N $time" >> sequential_datas_times.dat
+    echo "$N $time" >> sequential_datas_times.dat
 done
 
 gnuplot script.gnu -p
