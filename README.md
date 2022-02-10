@@ -20,4 +20,4 @@ in his [thesis](https://tel.archives-ouvertes.fr/tel-03088530v2/document)
   <li> install <strong>gnuplot-x11</strong> as <em>sudo apt  install gnuplot-x11</em></li>
 </ul>
 
-## How To use
+## How To use ?
