@@ -21,7 +21,7 @@ double *O;
 int *n;
 int threadNbr = 0;
 
-void sensors_deployment(int Ni, int Ki, int lambda, float alpha, double p);
+void sensors_deployment();
 void *calculate_Oi(void *args);
 void save_datas(int number, double time);
 void graphic(int number);
@@ -57,9 +57,9 @@ int main(int argc, char *argv[])
     // Initialisation des Parametres de l'algo de Deploiement
     N = atoi(argv[1]);
     K = atoi(argv[2]);
-    int lambda = atoi(argv[3]);
-    float alpha = atof(argv[4]);
-    float p = atof(argv[5]);
+    lambda = atoi(argv[3]);
+    alpha = atof(argv[4]);
+    p = atof(argv[5]);
 
     T = malloc(K * sizeof(double));
     O = malloc(K * sizeof(double));
@@ -67,7 +67,7 @@ int main(int argc, char *argv[])
 
     // Evaluation du Temps
     start = clock();
-    sensors_deployment(N, K, lambda, alpha, p);
+    sensors_deployment();
     end = clock();
     exec_time = ((double)(end - start)) / CLOCKS_PER_SEC;
 
@@ -80,9 +80,9 @@ int main(int argc, char *argv[])
     return 0;
 }
 
-void sensors_deployment(int Ni, int Ki, int lambda, float alpha, double p)
+void sensors_deployment()
 {
-    int i = 0, j = 0, remaining_sensors = 0, indice;
+    int i = 0, j = 0, remaining_sensors = 0, indice = 0;
     float maxO = 0.0;
     pthread_t threads[threadNbr];
     Interval interval;
@@ -92,6 +92,8 @@ void sensors_deployment(int Ni, int Ki, int lambda, float alpha, double p)
     {
         T[i] = (lambda / (p + 1)) * ((p / (p + 1)) + (pow(-p, i + 1) / (p + 1)) + (i + 1));
     }
+    for (i = 0; i < K; i++)
+        printf("T = %.3lf", T[i]);
 
     for (i = 0; i < K; i++)
         n[i] = 1; // Affectation d'1 capt dans chaq Bi
@@ -110,13 +112,14 @@ void sensors_deployment(int Ni, int Ki, int lambda, float alpha, double p)
             pthread_create(&threads[i], NULL, calculate_Oi, (void *)&interval);
             pthread_join(threads[i], NULL);
         }
-        // for (j = 0; j < threadNbr; j++)
-        //     pthread_join(threads[j], NULL);
+        for (j = 0; j < threadNbr; j++)
+            pthread_join(threads[j], NULL);
 
-        printf("\nO = ");
+        printf("\nO/for = ");
         for (j = 0; j < K; j++)
             printf("%.4lf |", O[j]);
         puts("\n");
+
         //Remise a 0
         maxO = 0;
         indice = 0;
@@ -139,7 +142,7 @@ void sensors_deployment(int Ni, int Ki, int lambda, float alpha, double p)
 void *calculate_Oi(void *args)
 {
     Interval *interval = (Interval *)args;
-    int i;
+    int l = 0;
 
     double Ti_bar = 0.0;
     double Ri_rsc = 0.0;
@@ -148,40 +151,42 @@ void *calculate_Oi(void *args)
     double Ri_rsf = 0.0;
     double Ri_rsr = 0.0;
 
-    for (i = interval->begin; i <= interval->end; i++)
+    for (l = interval->begin; l <= interval->end; l++)
     {
-        printf("\n Noeud V %d", i);
-        Ti_bar = T[i] / n[i];
-        Ri_rsc = T[i] * ((n[i] - 1) / n[i]);
+        //printf("\n Noeud V %d debut = %d fin = %d", l, interval->begin, interval->end);
+        Ri_ps = 0.0;
+        Ti_bar = 0.0;
+        Ti_bar = T[l] / n[l];
+        Ri_rsc = T[l] * ((n[l] - 1) / n[l]);
 
-        if (i == 0)
-            Ri_ps = ((T[i] - lambda) / n[i]) + alpha * Ri_rsc;
+        if (l == 0)
+            Ri_ps = ((T[l] - lambda) / n[l]) + (alpha * Ri_rsc);
 
-        if (i > 0 && i < K - 2)
+        if (l > 0 && l < K - 2)
         {
-            Ri_rsnr = p * T[i - 1];
-            Ri_rsf = T[i + 1] + (p * T[i + 2]);
-            Ri_rsr = ((T[i] - lambda) * (n[i] - 1)) / n[i];
-            Ri_ps = ((T[i] - lambda) / n[i]) + alpha * (Ri_rsr + Ri_rsnr + Ri_rsf + Ri_rsc);
+            Ri_rsnr = p * T[l - 1];
+            Ri_rsf = T[l + 1] + (p * T[l + 2]);
+            Ri_rsr = ((T[l] - lambda) * (n[l] - 1)) / n[l];
+            Ri_ps = ((T[l] - lambda) / n[l]) + alpha * (Ri_rsr + Ri_rsnr + Ri_rsf + Ri_rsc);
         }
 
-        if (i == K - 2)
+        if (l == K - 2)
         {
-            Ri_rsnr = p * T[i - 1];
-            Ri_rsf = T[i + 1];
-            Ri_rsr = ((T[i] - lambda) * (n[i] - 1)) / n[i];
-            Ri_ps = ((T[i] - lambda) / n[i]) + alpha * (Ri_rsr + Ri_rsnr + Ri_rsf + Ri_rsc);
+            Ri_rsnr = p * T[l - 1];
+            Ri_rsf = T[l + 1];
+            Ri_rsr = ((T[l] - lambda) * (n[l] - 1)) / n[l];
+            Ri_ps = ((T[l] - lambda) / n[l]) + alpha * (Ri_rsr + Ri_rsnr + Ri_rsf + Ri_rsc);
         }
 
-        // pour K -2, Ri_rsf = 0
-        if (i == K - 1)
+        // pour K - 1, Ri_rsf = 0
+        if (l == K - 1)
         {
-            Ri_rsnr = p * T[i - 1];
-            Ri_rsr = ((T[i] - lambda) * (n[i] - 1)) / n[i];
-            Ri_ps = ((T[i] - lambda) / n[i]) + alpha * (Ri_rsr + Ri_rsnr + Ri_rsc);
+            Ri_rsnr = p * T[l - 1];
+            Ri_rsr = ((T[l] - lambda) * (n[l] - 1)) / n[l];
+            Ri_ps = ((T[l] - lambda) / n[l]) + alpha * (Ri_rsr + Ri_rsnr + Ri_rsc);
         }
 
-        O[i] = Ti_bar + Ri_ps;
+        O[l] = Ti_bar + Ri_ps;
     }
 }
 
