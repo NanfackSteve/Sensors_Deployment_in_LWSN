@@ -16,4 +16,5 @@ do
     echo "$N $time" >> sequential_datas_times.dat
 done
 
+mv datas_deploy_* ./sequential_datas/
 gnuplot script.gnu -p

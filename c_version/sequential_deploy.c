@@ -63,18 +63,18 @@ void sensors_deployment(int Ni, int Ki, int lambda, float alpha, double p)
     float maxO = 0.0;
 
     // Calcul de Ti de chaq Bi
-    for (i = 0; i < K; i++)
+    for (i = 0; i < Ki; i++)
         T[i] = (lambda / (p + 1)) * ((p / (p + 1)) + (pow(-p, i + 1) / (p + 1)) + (i + 1));
 
-    for (i = 0; i < K; i++)
+    for (i = 0; i < Ki; i++)
         n[i] = 1; // Affectation d'1 capt dans chaq Bi
 
-    remaining_sensors = N - K;
+    remaining_sensors = Ni - Ki;
 
     while (remaining_sensors != 0)
     {
         // Calcul du Nbr d'Oper. Oi de chaq Bi
-        for (i = 0; i < K; i++)
+        for (i = 0; i < Ki; i++)
             O[i] = calculate_Oi(i, lambda, alpha, p);
 
         //Remise a 0
@@ -82,7 +82,7 @@ void sensors_deployment(int Ni, int Ki, int lambda, float alpha, double p)
         indice = 0;
 
         //Recherche du Nbr d'Oper. Max
-        for (i = 0; i < K; i++)
+        for (i = 0; i < Ki; i++)
         {
             if (O[i] >= maxO)
             {
@@ -125,7 +125,7 @@ double calculate_Oi(int i, int lambda, float alpha, float p)
         Ri_ps = ((T[i] - lambda) / n[i]) + alpha * (Ri_rsr + Ri_rsnr + Ri_rsf + Ri_rsc);
     }
 
-    // pour K -2, Ri_rsf = 0
+    // pour K - 1, Ri_rsf = 0
     if (i == K - 1)
     {
         Ri_rsnr = p * T[i - 1];
