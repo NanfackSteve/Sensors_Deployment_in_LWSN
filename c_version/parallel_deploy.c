@@ -28,12 +28,12 @@ void graphic(int number);
 
 int main(int argc, char *argv[])
 {
-    int i = 0, Totalcores = 0;
+    int i = 0, Totalcores = 0, filenumber = 0;
     clock_t start, end;
     double exec_time;
 
     //Test du Nombre de Parametres
-    if (argc != 7)
+    if (argc < 6 && argc > 8)
     {
         printf("\nError !!! Many/Few arguments\n\n");
         return EXIT_FAILURE;
@@ -60,6 +60,8 @@ int main(int argc, char *argv[])
     lambda = atoi(argv[3]);
     alpha = atof(argv[4]);
     p = atof(argv[5]);
+    if (argc == 8)
+        filenumber = atoi(argv[7]);
 
     T = malloc(K * sizeof(double));
     O = malloc(K * sizeof(double));
@@ -77,6 +79,8 @@ int main(int argc, char *argv[])
         printf(" \nVirt. Node %d \t =    %d sensor(s)\n", i + 1, n[i]);
     printf("\n+-----------------------+\n| Time Exec. = %lf |\n+-----------------------+\n\n", exec_time);
 
+    save_datas(filenumber, exec_time);
+
     return 0;
 }
 
@@ -92,8 +96,6 @@ void sensors_deployment()
     {
         T[i] = (lambda / (p + 1)) * ((p / (p + 1)) + (pow(-p, i + 1) / (p + 1)) + (i + 1));
     }
-    for (i = 0; i < K; i++)
-        printf("T = %.3lf", T[i]);
 
     for (i = 0; i < K; i++)
         n[i] = 1; // Affectation d'1 capt dans chaq Bi
@@ -112,13 +114,11 @@ void sensors_deployment()
             pthread_create(&threads[i], NULL, calculate_Oi, (void *)&interval);
             pthread_join(threads[i], NULL);
         }
-        for (j = 0; j < threadNbr; j++)
-            pthread_join(threads[j], NULL);
 
-        printf("\nO/for = ");
-        for (j = 0; j < K; j++)
-            printf("%.4lf |", O[j]);
-        puts("\n");
+        // printf("\nO/for = ");
+        // for (j = 0; j < K; j++)
+        //     printf("%.4lf |", O[j]);
+        // puts("\n");
 
         //Remise a 0
         maxO = 0;
