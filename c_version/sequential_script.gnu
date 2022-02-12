@@ -10,4 +10,4 @@ set rmargin at screen 0.9
 set lmargin at screen 0.18
 set mapping cartesian
 
-plot "sequential_datas_times.dat" with lp linewidth 2.5 linetype 7 title "Sequential Exec. time " at 0.45, 0.8
+plot "sequential_datas_times.dat" with lp linewidth 2.5 linetype 6 title "Sequential Exec. time " at 0.45, 0.8
