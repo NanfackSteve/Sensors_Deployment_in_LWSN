@@ -14,7 +14,11 @@ do
     filename=$(echo "datas_deploy_$i.dat")
     time=$(grep "time" ${filename} | cut -f 3 -d " ") 
     echo "$N $time" >> sequential_datas_times.dat
+    mv datas_deploy_* ./sequential_datas/
 done
 
-mv datas_deploy_* ./sequential_datas/
-gnuplot sequential_script.gnu -p
+echo "$# - $2"
+
+if [ $# -gt 0 ]; then
+    gnuplot sequential_script.gnu -p
+fi

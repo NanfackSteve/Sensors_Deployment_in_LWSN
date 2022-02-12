@@ -14,7 +14,9 @@ do
     filename=$(echo "datas_deploy_$i.dat")
     time=$(grep "time" ${filename} | cut -f 3 -d " ") 
     echo "$N $time" >> parallel_datas_times.dat
+    mv datas_deploy_* ./parallel_datas/
 done
 
-mv datas_deploy_* ./parallel_datas/
-gnuplot parallel_script.gnu -p
+if [ $# -gt 0 ]; then
+    gnuplot parallel_script.gnu -p
+fi

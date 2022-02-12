@@ -6,7 +6,7 @@ SCRIPT_S = sequential_n_deploy.sh
 
 all : $(EXEC_P) $(EXEC_S) $(SCRIPT_P) $(SCRIPT_S) #en faisant un make all cest $FILE qui s'execute
 	./$(SCRIPT_S)
-
+	./$(SCRIPT_P)
 $(EXEC) : sequential_deploy.c
 	$(CC) -o $(EXEC_S) sequential_deploy.c -lm
 
