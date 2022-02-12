@@ -10,4 +10,4 @@ set rmargin at screen 0.9
 set lmargin at screen 0.18
 set mapping cartesian
 
-plot "parallel_vs_sequential.dat" u 1:2 with lp linewidth 2.5 linetype 7 title "Parallel Exec. time " at 0.44, 0.8, "" u 1:3 with lp linewidth 2.5 linetype 6 title "Seqauential Exec. time " at 0.47, 0.75 
+plot "parallel_vs_sequential.dat" u 1:2 with lp linewidth 2.5 linetype 7 title "Parallel Exec. time " at 0.47, 0.8, "" u 1:3 with lp linewidth 2.5 linetype 6 title "Seqauential Exec. time " at 0.47, 0.75 

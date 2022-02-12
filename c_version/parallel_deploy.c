@@ -115,11 +115,6 @@ void sensors_deployment()
             pthread_join(threads[i], NULL);
         }
 
-        // printf("\nO/for = ");
-        // for (j = 0; j < K; j++)
-        //     printf("%.4lf |", O[j]);
-        // puts("\n");
-
         //Remise a 0
         maxO = 0;
         indice = 0;
@@ -153,7 +148,6 @@ void *calculate_Oi(void *args)
 
     for (l = interval->begin; l <= interval->end; l++)
     {
-        //printf("\n Noeud V %d debut = %d fin = %d", l, interval->begin, interval->end);
         Ri_ps = 0.0;
         Ti_bar = 0.0;
         Ti_bar = T[l] / n[l];
