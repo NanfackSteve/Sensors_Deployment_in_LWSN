@@ -7,17 +7,26 @@ in his [thesis](https://tel.archives-ouvertes.fr/tel-03088530v2/document)
 
 ## Pre-requisites
 
-### --> For Python Version 
+### [For Python Version](./python_version/) 
 
-<ul>
-  <li> import <strong>matplotlib</strong> module as <em>pip install matplotlib</em></li>
-</ul>
+```
+pip install matplotlib
+```
 
-### --> For C version 
+### [For C Version](./c_version/) 
 
-<ul>
-  <li> install <strong>plotutils</strong> as <em>sudo apt  install plotutils</em></li>
-  <li> install <strong>gnuplot-x11</strong> as <em>sudo apt  install gnuplot-x11</em></li>
-</ul>
+```
+sudo apt install plotutils gnuplot-x11
+```
 
 ## How To use ?
+
+[For Python Version](./python_version/) run this command
+```
+python3 Sequential_deploy
+```
+
+[For C Version](./C_version/) run `make ` command
+```
+make all
+```
