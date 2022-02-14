@@ -3,10 +3,13 @@ EXEC_S = sequential_deploy.exe # nom du programme (a generer)
 EXEC_P = parallel_deploy.exe  
 SCRIPT_P = parallel_n_deploy.sh #nom du prog
 SCRIPT_S = sequential_n_deploy.sh 
+SCRIPT_SP = par_vs_seq.sh
 
 all : $(EXEC_P) $(EXEC_S) $(SCRIPT_P) $(SCRIPT_S) #en faisant un make all cest $FILE qui s'execute
 	./$(SCRIPT_S)
 	./$(SCRIPT_P)
+	./$(SCRIPT_SP) parallel_datas_times.dat sequential_datas_times.dat
+
 $(EXEC) : sequential_deploy.c
 	$(CC) -o $(EXEC_S) sequential_deploy.c -lm
 
