@@ -11,7 +11,7 @@ The pupose of this version is to <b>compare the execution time</b> of sequential
 To run all automatically just run `make all` command.
 
 <ul>
-    <li>For parallel_deploy.exe</li>
+    <li>For parallel_deploy.exe program, use like this:</li>
 </ul>
 
 `parallel_deploy.exe N K λ α p Thread_number deployment_number`
@@ -21,7 +21,7 @@ To run all automatically just run `make all` command.
 ```
 
 <ul>
-    <li>For sequential_deploy.exe</li>
+    <li>For sequential_deploy.exe program, use like this :</li>
 </ul>
 
 `sequential_deploy.exe N K λ α p deployment_number`
