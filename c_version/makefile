@@ -10,11 +10,11 @@ all : $(EXEC_P) $(EXEC_S) $(SCRIPT_P) $(SCRIPT_S) #en faisant un make all cest $
 	./$(SCRIPT_P)
 	./$(SCRIPT_SP) parallel_datas_times.dat sequential_datas_times.dat
 
-$(EXEC) : sequential_deploy.c
-	$(CC) -o $(EXEC_S) sequential_deploy.c -lm
+$(EXEC) : ./sequential_version/sequential_deploy.c
+	$(CC) -o ./sequential_version/$(EXEC_S) ./sequential_version/sequential_deploy.c -lm
 
-$(EXEC_P) : parallel_deploy.c
-	$(CC) -o $(EXEC_P) parallel_deploy.c -lm -lpthread
+$(EXEC_P) : ./parallel_version/parallel_deploy.c
+	$(CC) -o ./parallel_version/$(EXEC_P) ./parallel_version/parallel_deploy.c -lm -lpthread
 
 clean :
 	rm -rf *.o
