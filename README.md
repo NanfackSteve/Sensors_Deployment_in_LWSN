@@ -26,7 +26,7 @@ sudo apt install plotutils gnuplot-x11
 python3 Sequential_deploy
 ```
 
-[For C Version](./C_version/) run `make ` command
+[For C Version](./c_version/) run `make ` command
 ```
 make all
 ```
