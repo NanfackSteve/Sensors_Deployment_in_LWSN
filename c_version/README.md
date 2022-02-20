@@ -4,6 +4,8 @@ The purpose of this version is to <b>compare the execution time</b> of sequentia
 
 <img src="./resultats_par_vs_seq.png" alt="grapic" width="300" height="280"/>
 
+[ ![ C/C++ CI ](https://github.com/NanfackSteve/Sensors_Deployment_in_LWSN/actions/workflows/c-actions-CI.yml/badge.svg?branch=main&event=push) ](https://github.com/NanfackSteve/Sensors_Deployment_in_LWSN/actions/workflows/c-actions-CI.yml)
+
 <br/><em>parallel_datas</em> and <em>sequential_datas</em> <b>folders</b> will contains datas of each deployment (with specific parameters <b>N, K , λ, α, p</b>).
 
 ## How to use ?
