@@ -5,8 +5,6 @@ in his [thesis](https://tel.archives-ouvertes.fr/tel-03088530v2/document)
 
 <img src="./python_version/resultats_seq.png" alt="grapic" width="300" height="280"/>
 
-[ ![ C/C++ CI ](https://github.com/NanfackSteve/Sensors_Deployment_in_LWSN/actions/workflows/c-actions-CI.yml/badge.svg?branch=main&event=push) ](https://github.com/NanfackSteve/Sensors_Deployment_in_LWSN/actions/workflows/c-actions-CI.yml)
-
 ## Pre-requisites
 
 ### [For Python Version](./python_version/) 
