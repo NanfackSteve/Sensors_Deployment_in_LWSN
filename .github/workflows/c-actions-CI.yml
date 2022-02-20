@@ -17,5 +17,4 @@ jobs:
       run: ./c_version/sequential_version/sequential_deploy.exe 30 10 1 0.4 0.5
     - name: test parallel code
       run: ./c_version/parallel_version/parallel_deploy.exe 30 10 1 0.4 0.5 2
-    - name: make check
-      run: make check
+
