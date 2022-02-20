@@ -1,6 +1,6 @@
 # This version has parallel and sequential code
 
-The pupose of this version is to <b>compare the execution time</b> of sequential and parallel code. 
+The purpose of this version is to <b>compare the execution time</b> of sequential and parallel code. 
 
 <img src="./resultats_par_vs_seq.png" alt="grapic" width="300" height="280"/>
 
