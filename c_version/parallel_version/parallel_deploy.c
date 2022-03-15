@@ -80,7 +80,9 @@ int main(int argc, char *argv[])
     printf("\n+-----------------------+\n| Time Exec. = %lf |\n+-----------------------+\n\n", exec_time);
 
     save_datas(filenumber, exec_time);
-
+    free(O);
+    free(T);
+    free(n);
     return 0;
 }
 
@@ -133,7 +135,7 @@ void sensors_deployment()
 
 void *calculate_Oi(void *args)
 {
-    int virtNode = (int)args;
+    int *virtNode = (int *)args;
     double Ti_bar = 0.0;
     double Ri_rsc = 0.0;
     double Ri_ps = 0.0;
@@ -143,37 +145,37 @@ void *calculate_Oi(void *args)
 
     Ri_ps = 0.0;
     Ti_bar = 0.0;
-    Ti_bar = T[virtNode] / n[virtNode];
-    Ri_rsc = T[virtNode] * ((n[virtNode] - 1) / n[virtNode]);
+    Ti_bar = T[*virtNode] / n[*virtNode];
+    Ri_rsc = T[*virtNode] * ((n[*virtNode] - 1) / n[*virtNode]);
 
-    if (virtNode == 0)
-        Ri_ps = ((T[virtNode] - lambda) / n[virtNode]) + (alpha * Ri_rsc);
+    if (*virtNode == 0)
+        Ri_ps = ((T[*virtNode] - lambda) / n[*virtNode]) + (alpha * Ri_rsc);
 
-    if (virtNode > 0 && virtNode < K - 2)
+    if (*virtNode > 0 && *virtNode < K - 2)
     {
-        Ri_rsnr = p * T[virtNode - 1];
-        Ri_rsf = T[virtNode + 1] + (p * T[virtNode + 2]);
-        Ri_rsr = ((T[virtNode] - lambda) * (n[virtNode] - 1)) / n[virtNode];
-        Ri_ps = ((T[virtNode] - lambda) / n[virtNode]) + alpha * (Ri_rsr + Ri_rsnr + Ri_rsf + Ri_rsc);
+        Ri_rsnr = p * T[*virtNode - 1];
+        Ri_rsf = T[*virtNode + 1] + (p * T[*virtNode + 2]);
+        Ri_rsr = ((T[*virtNode] - lambda) * (n[*virtNode] - 1)) / n[*virtNode];
+        Ri_ps = ((T[*virtNode] - lambda) / n[*virtNode]) + alpha * (Ri_rsr + Ri_rsnr + Ri_rsf + Ri_rsc);
     }
 
-    if (virtNode == K - 2)
+    if (*virtNode == K - 2)
     {
-        Ri_rsnr = p * T[virtNode - 1];
-        Ri_rsf = T[virtNode + 1];
-        Ri_rsr = ((T[virtNode] - lambda) * (n[virtNode] - 1)) / n[virtNode];
-        Ri_ps = ((T[virtNode] - lambda) / n[virtNode]) + alpha * (Ri_rsr + Ri_rsnr + Ri_rsf + Ri_rsc);
+        Ri_rsnr = p * T[*virtNode - 1];
+        Ri_rsf = T[*virtNode + 1];
+        Ri_rsr = ((T[*virtNode] - lambda) * (n[*virtNode] - 1)) / n[*virtNode];
+        Ri_ps = ((T[*virtNode] - lambda) / n[*virtNode]) + alpha * (Ri_rsr + Ri_rsnr + Ri_rsf + Ri_rsc);
     }
 
     // pour K - 1, Ri_rsf = 0
-    if (virtNode == K - 1)
+    if (*virtNode == K - 1)
     {
-        Ri_rsnr = p * T[virtNode - 1];
-        Ri_rsr = ((T[virtNode] - lambda) * (n[virtNode] - 1)) / n[virtNode];
-        Ri_ps = ((T[virtNode] - lambda) / n[virtNode]) + alpha * (Ri_rsr + Ri_rsnr + Ri_rsc);
+        Ri_rsnr = p * T[*virtNode - 1];
+        Ri_rsr = ((T[*virtNode] - lambda) * (n[*virtNode] - 1)) / n[*virtNode];
+        Ri_ps = ((T[*virtNode] - lambda) / n[*virtNode]) + alpha * (Ri_rsr + Ri_rsnr + Ri_rsc);
     }
 
-    O[virtNode] = Ti_bar + Ri_ps;
+    O[*virtNode] = Ti_bar + Ri_ps;
 }
 
 void save_datas(int number, double time)
