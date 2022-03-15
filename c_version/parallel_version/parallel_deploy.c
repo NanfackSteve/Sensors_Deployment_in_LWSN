@@ -48,11 +48,11 @@ int main(int argc, char *argv[])
     pclose(f);
     Totalcores = atoi(tmp);
 
-    if (threadNbr > Totalcores || threadNbr < 1)
-    {
-        printf("\nError in The Thread's Number !!!\n\n");
-        return EXIT_FAILURE;
-    }
+    // if (threadNbr > Totalcores || threadNbr < 1)
+    // {
+    //     printf("\nError in The Thread's Number !!!\n\n");
+    //     return EXIT_FAILURE;
+    // }
 
     // Initialisation des Parametres de l'algo de Deploiement
     N = atoi(argv[1]);
@@ -107,11 +107,8 @@ void sensors_deployment()
         // Calcul du Nbr d'Oper. Oi de chaq Bi
         for (i = 0; i < threadNbr; i++)
         {
-            interval.begin = (i * K) / threadNbr;
-            interval.end = ((i + 1) * K / threadNbr) - 1;
-
             //Lancement des Threads
-            pthread_create(&threads[i], NULL, calculate_Oi, (void *)&interval);
+            pthread_create(&threads[i], NULL, calculate_Oi, NULL);
             pthread_join(threads[i], NULL);
         }
 
@@ -136,9 +133,7 @@ void sensors_deployment()
 
 void *calculate_Oi(void *args)
 {
-    Interval *interval = (Interval *)args;
-    int l = 0;
-
+    int virtNode = (int)args;
     double Ti_bar = 0.0;
     double Ri_rsc = 0.0;
     double Ri_ps = 0.0;
@@ -146,42 +141,39 @@ void *calculate_Oi(void *args)
     double Ri_rsf = 0.0;
     double Ri_rsr = 0.0;
 
-    for (l = interval->begin; l <= interval->end; l++)
+    Ri_ps = 0.0;
+    Ti_bar = 0.0;
+    Ti_bar = T[virtNode] / n[virtNode];
+    Ri_rsc = T[virtNode] * ((n[virtNode] - 1) / n[virtNode]);
+
+    if (virtNode == 0)
+        Ri_ps = ((T[virtNode] - lambda) / n[virtNode]) + (alpha * Ri_rsc);
+
+    if (virtNode > 0 && virtNode < K - 2)
     {
-        Ri_ps = 0.0;
-        Ti_bar = 0.0;
-        Ti_bar = T[l] / n[l];
-        Ri_rsc = T[l] * ((n[l] - 1) / n[l]);
-
-        if (l == 0)
-            Ri_ps = ((T[l] - lambda) / n[l]) + (alpha * Ri_rsc);
-
-        if (l > 0 && l < K - 2)
-        {
-            Ri_rsnr = p * T[l - 1];
-            Ri_rsf = T[l + 1] + (p * T[l + 2]);
-            Ri_rsr = ((T[l] - lambda) * (n[l] - 1)) / n[l];
-            Ri_ps = ((T[l] - lambda) / n[l]) + alpha * (Ri_rsr + Ri_rsnr + Ri_rsf + Ri_rsc);
-        }
-
-        if (l == K - 2)
-        {
-            Ri_rsnr = p * T[l - 1];
-            Ri_rsf = T[l + 1];
-            Ri_rsr = ((T[l] - lambda) * (n[l] - 1)) / n[l];
-            Ri_ps = ((T[l] - lambda) / n[l]) + alpha * (Ri_rsr + Ri_rsnr + Ri_rsf + Ri_rsc);
-        }
-
-        // pour K - 1, Ri_rsf = 0
-        if (l == K - 1)
-        {
-            Ri_rsnr = p * T[l - 1];
-            Ri_rsr = ((T[l] - lambda) * (n[l] - 1)) / n[l];
-            Ri_ps = ((T[l] - lambda) / n[l]) + alpha * (Ri_rsr + Ri_rsnr + Ri_rsc);
-        }
-
-        O[l] = Ti_bar + Ri_ps;
+        Ri_rsnr = p * T[virtNode - 1];
+        Ri_rsf = T[virtNode + 1] + (p * T[virtNode + 2]);
+        Ri_rsr = ((T[virtNode] - lambda) * (n[virtNode] - 1)) / n[virtNode];
+        Ri_ps = ((T[virtNode] - lambda) / n[virtNode]) + alpha * (Ri_rsr + Ri_rsnr + Ri_rsf + Ri_rsc);
     }
+
+    if (virtNode == K - 2)
+    {
+        Ri_rsnr = p * T[virtNode - 1];
+        Ri_rsf = T[virtNode + 1];
+        Ri_rsr = ((T[virtNode] - lambda) * (n[virtNode] - 1)) / n[virtNode];
+        Ri_ps = ((T[virtNode] - lambda) / n[virtNode]) + alpha * (Ri_rsr + Ri_rsnr + Ri_rsf + Ri_rsc);
+    }
+
+    // pour K - 1, Ri_rsf = 0
+    if (virtNode == K - 1)
+    {
+        Ri_rsnr = p * T[virtNode - 1];
+        Ri_rsr = ((T[virtNode] - lambda) * (n[virtNode] - 1)) / n[virtNode];
+        Ri_ps = ((T[virtNode] - lambda) / n[virtNode]) + alpha * (Ri_rsr + Ri_rsnr + Ri_rsc);
+    }
+
+    O[virtNode] = Ti_bar + Ri_ps;
 }
 
 void save_datas(int number, double time)
