@@ -108,7 +108,7 @@ void sensors_deployment()
         for (i = 0; i < threadNbr; i++)
         {
             //Lancement des Threads
-            pthread_create(&threads[i], NULL, calculate_Oi, NULL);
+            pthread_create(&threads[i], NULL, calculate_Oi, (void *)&i);
             pthread_join(threads[i], NULL);
         }
 
