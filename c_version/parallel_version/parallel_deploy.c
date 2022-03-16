@@ -33,7 +33,7 @@ int main(int argc, char *argv[])
     double exec_time;
 
     //Test du Nombre de Parametres
-    if (argc < 6 && argc > 8)
+    if (argc < 6 || argc > 8)
     {
         printf("\nError !!! Many/Few arguments\n\n");
         return EXIT_FAILURE;
