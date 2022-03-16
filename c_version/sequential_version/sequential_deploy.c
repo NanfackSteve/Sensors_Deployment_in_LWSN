@@ -20,7 +20,7 @@ int main(int argc, char *argv[])
     double exec_time;
 
     //Test du Nombre de Parametres
-    if (argc < 6 && argc > 7)
+    if (argc < 6 || argc > 7)
     {
         printf("\nError !!! Many/Few arguments\n\n");
         return EXIT_FAILURE;
@@ -53,6 +53,10 @@ int main(int argc, char *argv[])
 
     save_datas(filenumber, exec_time);
     // graphic(filenumber); //decommente pour visualiser le deploiement
+
+    free(T);
+    free(O);
+    free(n);
 
     return 0;
 }
