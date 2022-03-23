@@ -18,7 +18,7 @@ double *T;
 double *O;
 int *n;
 
-void sensors_deployment(double *exec_time, ParametersT *params, double O[], double T[], int n[], int *threadNbr);
+void sensors_deployment(double *exec_time, ParametersT *params, double *O, double *T, int *n, int *threadNbr);
 void *calculate_Oi(void *args);
 void save_datas(int number, double time, int K);
 void graphic(int number);
@@ -79,7 +79,7 @@ int main(int argc, char *argv[])
     return 0;
 }
 
-void sensors_deployment(double *exec_time, ParametersT *params, double O[], double T[], int n[], int *threadNbr)
+void sensors_deployment(double *exec_time, ParametersT *params, double *O, double *T, int *n, int *threadNbr)
 {
     int i = 0, j = 0, remaining_sensors = 0, indice = 0, lambda, N, K, idThread;
     float maxO = 0.0, p;
@@ -88,7 +88,7 @@ void sensors_deployment(double *exec_time, ParametersT *params, double O[], doub
     K = params->K;
     lambda = params->lambda;
     p = params->p;
-    pthread_t threads[*threadNbr];
+    pthread_t threads[(*threadNbr)];
     clock_t start, end;
 
     // Evaluation du Temps
@@ -105,6 +105,7 @@ void sensors_deployment(double *exec_time, ParametersT *params, double O[], doub
 
     remaining_sensors = N - K;
 
+    printf("Ok");
     while (remaining_sensors != 0)
     {
         // Calcul du Nbr d'Oper. Oi de chaq Bi
@@ -137,6 +138,12 @@ void sensors_deployment(double *exec_time, ParametersT *params, double O[], doub
 
     end = clock();
     *exec_time = ((double)(end - start)) / CLOCKS_PER_SEC;
+    free(O);
+    free(T);
+    free(n);
+    free(threadNbr);
+    free(params);
+    free(exec_time);
 }
 
 void *calculate_Oi(void *args)
