@@ -8,7 +8,7 @@ double *T;
 double *O;
 int *n;
 
-void sensors_deployment(int Ni, int Ki, int lambda, float alpha, double p);
+double sensors_deployment(int Ni, int Ki, int lambda, float alpha, double p);
 double calculate_Oi(int i, int lambda, float alpha, float p);
 void save_datas(int number, double time);
 void graphic(int number);
@@ -16,10 +16,9 @@ void graphic(int number);
 int main(int argc, char *argv[])
 {
     int i = 0, filenumber = 0;
-    clock_t start, end;
     double exec_time;
 
-    //Test du Nombre de Parametres
+    // Test du Nombre de Parametres
     if (argc < 6 || argc > 7)
     {
         printf("\nError !!! Many/Few arguments\n\n");
@@ -39,11 +38,7 @@ int main(int argc, char *argv[])
     O = malloc(K * sizeof(double));
     n = malloc(K * sizeof(int));
 
-    // Evaluation du Temps
-    start = clock();
-    sensors_deployment(N, K, lambda, alpha, p);
-    end = clock();
-    exec_time = ((double)(end - start)) / CLOCKS_PER_SEC;
+    exec_time = sensors_deployment(N, K, lambda, alpha, p);
 
     // Affichage
     printf("\nAfter deployment of N = %d sensors in K = %d Virtual nodes we have:\n", N, K);
@@ -61,10 +56,16 @@ int main(int argc, char *argv[])
     return 0;
 }
 
-void sensors_deployment(int Ni, int Ki, int lambda, float alpha, double p)
+double sensors_deployment(int Ni, int Ki, int lambda, float alpha, double p)
 {
     int i = 0, j = 0, remaining_sensors = 0, indice;
     float maxO = 0.0;
+
+    clock_t start, end;
+    double exec_time;
+
+    // Evaluation du Temps
+    start = clock();
 
     // Calcul de Ti de chaq Bi
     for (i = 0; i < Ki; i++)
@@ -81,11 +82,11 @@ void sensors_deployment(int Ni, int Ki, int lambda, float alpha, double p)
         for (i = 0; i < Ki; i++)
             O[i] = calculate_Oi(i, lambda, alpha, p);
 
-        //Remise a 0
+        // Remise a 0
         maxO = 0;
         indice = 0;
 
-        //Recherche du Nbr d'Oper. Max
+        // Recherche du Nbr d'Oper. Max
         for (i = 0; i < Ki; i++)
         {
             if (O[i] >= maxO)
@@ -98,6 +99,10 @@ void sensors_deployment(int Ni, int Ki, int lambda, float alpha, double p)
         n[indice] += 1;
         remaining_sensors -= 1;
     }
+    end = clock();
+    exec_time = ((double)(end - start)) / CLOCKS_PER_SEC;
+
+    return exec_time;
 }
 
 double calculate_Oi(int i, int lambda, float alpha, float p)
