@@ -12,15 +12,14 @@ typedef struct
     float p;
     int K;
     int N;
+    double *T;
+    double *O;
+    int *n;
 } ParametersT;
 
-double *T;
-double *O;
-int *n;
-
-void sensors_deployment(double *exec_time, ParametersT *params, double *O, double *T, int *n, int *threadNbr);
+void sensors_deployment(double *exec_time, ParametersT *params, int *threadNbr);
 void *calculate_Oi(void *args);
-void save_datas(int number, double time, int K);
+void save_datas(int number, double time, int K, int n[]);
 void graphic(int number);
 
 int main(int argc, char *argv[])
@@ -60,30 +59,32 @@ int main(int argc, char *argv[])
     if (argc == 8)
         filenumber = atoi(argv[7]);
 
-    T = malloc(params.K * sizeof(double));
-    O = malloc(params.K * sizeof(double));
-    n = malloc(params.K * sizeof(int));
+    params.T = (double *)malloc(params.K * sizeof(double));
+    params.O = (double *)malloc(params.K * sizeof(double));
+    params.n = (int *)malloc(params.K * sizeof(int));
 
-    sensors_deployment(&exec_time, &params, O, T, n, &threadNbr);
+    sensors_deployment(&exec_time, &params, &threadNbr);
 
     // Affichage
     printf("\nAfter deployment of N = %d sensors in K = %d Virtual nodes we have:\n", params.N, params.K);
     for (i = 0; i < params.K; i++)
-        printf(" \nVirt. Node %d \t =    %d sensor(s)\n", i + 1, n[i]);
+        printf(" \nVirt. Node %d \t =    %d sensor(s)\n", i + 1, params.n[i]);
     printf("\n+-----------------------+\n| Time Exec. = %lf |\n+-----------------------+\n\n", exec_time);
 
-    save_datas(filenumber, exec_time, params.K);
-    free(O);
-    free(T);
-    free(n);
+    save_datas(filenumber, exec_time, params.K, params.n);
+    free(params.O);
+    free(params.T);
+    free(params.n);
     return 0;
 }
 
-void sensors_deployment(double *exec_time, ParametersT *params, double *O, double *T, int *n, int *threadNbr)
+void sensors_deployment(double *exec_time, ParametersT *params, int *threadNbr)
 {
     int i = 0, j = 0, remaining_sensors = 0, indice = 0, lambda, N, K, idThread;
     float maxO = 0.0, p;
 
+    double *O = params->O, *T = params->T;
+    int *n = params->n;
     N = params->N;
     K = params->K;
     lambda = params->lambda;
@@ -95,6 +96,7 @@ void sensors_deployment(double *exec_time, ParametersT *params, double *O, doubl
     start = clock();
 
     // Calcul de Ti
+
     for (i = 0; i < K; i++)
     {
         T[i] = (lambda / (p + 1)) * ((p / (p + 1)) + (pow(-(p), i + 1) / (p + 1)) + (i + 1));
@@ -105,7 +107,6 @@ void sensors_deployment(double *exec_time, ParametersT *params, double *O, doubl
 
     remaining_sensors = N - K;
 
-    printf("Ok");
     while (remaining_sensors != 0)
     {
         // Calcul du Nbr d'Oper. Oi de chaq Bi
@@ -138,18 +139,16 @@ void sensors_deployment(double *exec_time, ParametersT *params, double *O, doubl
 
     end = clock();
     *exec_time = ((double)(end - start)) / CLOCKS_PER_SEC;
-    free(O);
-    free(T);
-    free(n);
+
     free(threadNbr);
-    free(params);
     free(exec_time);
 }
 
 void *calculate_Oi(void *args)
 {
     ParametersT *params = (ParametersT *)args;
-    int K = params->K;
+    double *T = params->T, *O = params->O;
+    int K = params->K, *n = params->n;
     int virtNode = params->num;
     int lambda = params->lambda;
     float alpha = params->alpha;
@@ -197,7 +196,7 @@ void *calculate_Oi(void *args)
     O[virtNode] = Ti_bar + Ri_ps;
 }
 
-void save_datas(int number, double time, int K)
+void save_datas(int number, double time, int K, int n[])
 {
     int i = 0;
 
