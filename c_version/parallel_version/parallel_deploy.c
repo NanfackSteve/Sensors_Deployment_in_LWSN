@@ -82,6 +82,7 @@ void sensors_deployment(double *exec_time, ParametersT *params, int *threadNbr)
 {
     int i = 0, j = 0, remaining_sensors = 0, indice = 0, lambda, N, K, idThread;
     float maxO = 0.0, p;
+    void *resultat;
 
     double *O = params->O, *T = params->T;
     int *n = params->n;
@@ -116,7 +117,8 @@ void sensors_deployment(double *exec_time, ParametersT *params, int *threadNbr)
             idThread = i % (*threadNbr);
             params->num = i;
             pthread_create(&threads[idThread], NULL, calculate_Oi, (void *)params);
-            pthread_join(threads[i], NULL);
+            pthread_join(threads[i], &resultat);
+            O[i] = *((double *)resultat);
         }
 
         // Remise a 0
@@ -147,7 +149,7 @@ void sensors_deployment(double *exec_time, ParametersT *params, int *threadNbr)
 void *calculate_Oi(void *args)
 {
     ParametersT *params = (ParametersT *)args;
-    double *T = params->T, *O = params->O;
+    double *T = params->T, *O = params->O, r;
     int K = params->K, *n = params->n;
     int virtNode = params->num;
     int lambda = params->lambda;
@@ -193,7 +195,8 @@ void *calculate_Oi(void *args)
         Ri_ps = ((T[virtNode] - lambda) / n[virtNode]) + alpha * (Ri_rsr + Ri_rsnr + Ri_rsc);
     }
 
-    O[virtNode] = Ti_bar + Ri_ps;
+    r = Ti_bar + Ri_ps;
+    pthread_exit(&r);
 }
 
 void save_datas(int number, double time, int K, int n[])
