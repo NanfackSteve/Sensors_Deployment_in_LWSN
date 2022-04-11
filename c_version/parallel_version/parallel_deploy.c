@@ -117,7 +117,7 @@ void sensors_deployment(double *exec_time, ParametersT *params, int *threadNbr)
             idThread = i % (*threadNbr);
             params->num = i;
             pthread_create(&threads[idThread], NULL, calculate_Oi, (void *)params);
-            pthread_join(threads[i], &resultat);
+            pthread_join(threads[idThread], &resultat);
             O[i] = *((double *)resultat);
         }
 
@@ -141,9 +141,6 @@ void sensors_deployment(double *exec_time, ParametersT *params, int *threadNbr)
 
     end = clock();
     *exec_time = ((double)(end - start)) / CLOCKS_PER_SEC;
-
-    free(threadNbr);
-    free(exec_time);
 }
 
 void *calculate_Oi(void *args)
@@ -196,7 +193,7 @@ void *calculate_Oi(void *args)
     }
 
     r = Ti_bar + Ri_ps;
-    pthread_exit(&r);
+    pthread_exit((void *)&r);
 }
 
 void save_datas(int number, double time, int K, int n[])
