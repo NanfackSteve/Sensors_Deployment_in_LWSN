@@ -115,16 +115,15 @@ double parallel_sensors_deployment(int numThreads)
     // Evaluation du Temps
     start = clock();
 
-    // Calcul de Ti
-
+    // Calcul de Ti and affect 1 to each n[i]
     for (t = 0; t < numThreads; t++)
         pthread_create(&threads[t], &attr, par_calculate_Ti, (void *)t);
+
+    remaining_sensors = N - K;
 
     /* Free attribute and wait for the other threads */
     for (t = 0; t < numThreads; t++)
         pthread_join(threads[t], NULL);
-
-    remaining_sensors = N - K;
 
     while (remaining_sensors != 0)
     {
