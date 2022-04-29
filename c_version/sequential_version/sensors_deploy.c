@@ -30,7 +30,7 @@ int main(int argc, char *argv[])
     double exec_time;
 
     // Test du Nombre de Parametres
-    if (argc < 6 || argc > 7)
+    if (argc < 6 || argc > 6)
     {
         printf("\nError !!! Many/Few arguments\n\n");
         return EXIT_FAILURE;
@@ -42,8 +42,6 @@ int main(int argc, char *argv[])
     lambda = atoi(argv[3]);
     alpha = atof(argv[4]);
     p = atof(argv[5]);
-    if (argc == 7)
-        filenumber = atoi(argv[6]);
 
     T = malloc(K * sizeof(double));
     O = malloc(K * sizeof(double));
@@ -51,7 +49,6 @@ int main(int argc, char *argv[])
 
     // Message d'entre
     printf("\nSensors Deployment with N = %d, K = %d, lambda = %d, alpha = %.1f, p = %.1f  \n\n", N, K, lambda, alpha, p);
-
     printf("0 - Exit \n1 - Sequential Deployement \n2 - Parallel deployement\n\nEnter an option : ");
     scanf("%d", &choice);
 
@@ -86,12 +83,6 @@ int main(int argc, char *argv[])
         return 0;
         break;
     }
-
-    // Affichage
-    // printf("\nAfter deployment of N = %d sensors in K = %d Virtual nodes we have:\n", N, K);
-    // for (i = 0; i < K; i++)
-    //     printf(" \nVirt. Node %d \t =    %d sensor(s)\n", i + 1, n[i]);
-    // printf("\n+-----------------------+\n| Time Exec. = %lf |\n+-----------------------+\n\n", exec_time);
 
     // save_datas(filenumber, exec_time);
     //  graphic(filenumber); //decommente pour visualiser le deploiement
@@ -128,16 +119,11 @@ double parallel_sensors_deployment(int numThreads)
     // Calcul de Ti
 
     for (t = 0; t < numThreads; t++)
-    {
-        // Lancement des Threads
         pthread_create(&threads[t], &attr, par_calculate_Ti, (void *)t);
-    }
 
     /* Free attribute and wait for the other threads */
     for (t = 0; t < numThreads; t++)
-    {
         pthread_join(threads[t], NULL);
-    }
 
     remaining_sensors = N - K;
 
@@ -145,16 +131,11 @@ double parallel_sensors_deployment(int numThreads)
     {
         // Calcul du Nbr d'Oper. Oi de chaq Bi
         for (t = 0; t < numThreads; t++)
-        {
-            // Lancement des Threads
             pthread_create(&threads[t], &attr, par_calculate_Oi, (void *)t);
-        }
 
         /* Free attribute and wait for the other threads */
         for (t = 0; t < numThreads; t++)
-        {
             pthread_join(threads[t], NULL);
-        }
 
         // Remise a 0
         maxO = 0;
@@ -186,7 +167,7 @@ double parallel_sensors_deployment(int numThreads)
 
 void *par_calculate_Ti(void *arg)
 {
-    long debut, fin, idThread = 0, virtNode = 0;
+    long debut, fin, idThread, virtNode;
     idThread = (long)arg;
 
     // Calcul des Bornes
@@ -211,10 +192,10 @@ void *par_calculate_Ti(void *arg)
 
 void *par_calculate_Oi(void *arg)
 {
-    long debut, fin, idThread, virtNode = 0;
+    long debut, fin, idThread, virtNode;
+    idThread = (long)arg;
 
     // Calcul des Bornes
-    idThread = (long)arg;
     debut = idThread * (K / NUM_THREADS);
 
     if (idThread == (NUM_THREADS - 1))
