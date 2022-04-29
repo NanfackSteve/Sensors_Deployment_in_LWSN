@@ -11,8 +11,6 @@ double *T;
 double *O;
 int *n, NUM_THREADS = 1;
 
-//#define NUM_THREADS 1
-
 double parallel_sensors_deployment(int numThreads);
 void *par_calculate_Oi(void *arg);
 void *par_calculate_Ti(void *arg);
