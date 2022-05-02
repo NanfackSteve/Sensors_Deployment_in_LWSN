@@ -65,7 +65,7 @@ int main(int argc, char *argv[])
 
     case 2:
     {
-        printf("Give Thread number: ");
+        printf("\nGive Thread number: ");
         scanf("%d", &NUM_THREADS);
 
         exec_time = parallel_sensors_deployment(NUM_THREADS);
