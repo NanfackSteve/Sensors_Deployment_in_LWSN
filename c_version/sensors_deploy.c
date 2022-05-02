@@ -11,7 +11,6 @@ typedef struct
     long id;
 } maxOi_t;
 
-int *waitAll;
 maxOi_t maxOi;
 int N, K, lambda;
 float alpha;
@@ -20,8 +19,6 @@ int parallel_remaining_sensors;
 double *T;
 double *O;
 int *n, NUM_THREADS = 1;
-pthread_mutex_t mutex_max;
-pthread_mutex_t mutex_n;
 
 double parallel_sensors_deployment();
 void *parallel_compute(void *arg);
@@ -79,13 +76,9 @@ int main(int argc, char *argv[])
     {
         printf("\nGive Thread number: ");
         scanf("%d", &NUM_THREADS);
-        waitAll = malloc((NUM_THREADS - 1) * sizeof(int));
-        for (i = 0; i < NUM_THREADS; i++)
-            waitAll[i] = 0;
 
         exec_time2 = parallel_sensors_deployment();
         printf("\nParal. Time Exec. = %lf sec\n\n", exec_time2);
-        free(waitAll);
     }
     break;
 
@@ -110,8 +103,6 @@ int main(int argc, char *argv[])
 double parallel_sensors_deployment()
 {
     // Variables Threads
-    pthread_mutex_init(&mutex_max, NULL);
-    pthread_mutex_init(&mutex_n, NULL);
     pthread_t threads[NUM_THREADS];
     pthread_attr_t attr;
     pthread_attr_init(&attr);
@@ -140,7 +131,6 @@ double parallel_sensors_deployment()
 
     end = clock();
     exec_time = ((double)(end - start)) / CLOCKS_PER_SEC;
-    printf("\nTemps = %lf\n", exec_time);
 
     // printf("\nAfter deployment of N = %d sensors in K = %d Virtual nodes we have:\n", N, K);
     // for (i = 0; i < K; i++)
@@ -187,7 +177,6 @@ void *parallel_compute(void *arg)
 
     while (local_remaining_sensors != 0)
     {
-        waitAll[idThread] = 0;
         // calcul
         for (virtNode = debut; virtNode < fin; virtNode++)
         {
@@ -238,70 +227,8 @@ void *parallel_compute(void *arg)
                 local_indice = virtNode;
             }
         }
-
-        // printf("id %ld maxlocal = %f \n", idThread, local_max);
-        // system("sleep 3");
-
-        // MAJ du max global
-        if (maxOi.val <= local_max)
-        {
-            pthread_mutex_lock(&mutex_max);
-            maxOi.val = local_max;
-            maxOi.indice = local_indice;
-            maxOi.id = idThread;
-            pthread_mutex_unlock(&mutex_max);
-        }
-
-        // Attend les autres Threads
-        waitAll[idThread] = 1;
-
-        while (wait == 1)
-        {
-            wait = 0;
-
-            for (i = 0; i < NUM_THREADS; i++)
-                if (waitAll[i] == 0)
-                {
-                    wait = 1;
-                    // break;
-                }
-        }
-
-        // printf("%ld maxOi = %f \n", maxOi.id, maxOi.val);
-        // system("sleep 3");
-
-        // wait = 1;
-        if (maxOi.id == idThread)
-        {
-            // waitAll[idThread] = 0;
-            pthread_mutex_lock(&mutex_n);
-            n[maxOi.indice] += 1;
-            pthread_mutex_unlock(&mutex_n);
-
-            pthread_mutex_lock(&mutex_max);
-            maxOi.val = 0;
-            maxOi.indice = 0;
-            maxOi.id = -1;
-            pthread_mutex_unlock(&mutex_max);
-        }
-
-        // waitAll[idThread] = 1;
-
-        // while (wait == 1)
-        // {
-        //     wait = 0;
-
-        //     for (i = 0; i < NUM_THREADS; i++)
-        //         if (waitAll[i] == 0)
-        //         {
-        //             wait = 1;
-        //             // break;
-        //         }
-        // }
-
+        n[local_indice] += 1;
         local_remaining_sensors -= 1;
-
-        wait = 1;
     }
 }
 
