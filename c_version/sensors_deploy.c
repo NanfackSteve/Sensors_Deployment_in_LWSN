@@ -132,12 +132,6 @@ double parallel_sensors_deployment()
     end = clock();
     exec_time = ((double)(end - start)) / CLOCKS_PER_SEC;
 
-    // printf("\nAfter deployment of N = %d sensors in K = %d Virtual nodes we have:\n", N, K);
-    // for (i = 0; i < K; i++)
-    //     printf(" \nVirt. Node %d \t =    %d sensor(s)\n", i + 1, n[i]);
-
-    for (i = 0; i < K; i++)
-        printf(" \nn = %d ", n[i]);
     return exec_time;
 }
 
