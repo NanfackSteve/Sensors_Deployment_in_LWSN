@@ -4,16 +4,27 @@
 #include <sys/time.h>
 #include <pthread.h>
 
+typedef struct
+{
+    double val;
+    int indice;
+    long id;
+} maxOi_t;
+
+int *waitAll;
+maxOi_t maxOi;
 int N, K, lambda;
 float alpha;
 float p;
+int parallel_remaining_sensors;
 double *T;
 double *O;
 int *n, NUM_THREADS = 1;
+pthread_mutex_t mutex_max;
+pthread_mutex_t mutex_n;
 
-double parallel_sensors_deployment(int numThreads);
-void *par_calculate_Oi(void *arg);
-void *par_calculate_Ti(void *arg);
+double parallel_sensors_deployment();
+void *parallel_compute(void *arg);
 
 double seq_sensors_deployment();
 double calculate_Oi(int i, int lambda, float alpha, float p);
@@ -24,8 +35,9 @@ void graphic(int number);
 int main(int argc, char *argv[])
 {
     int i = 0, filenumber = 0, choice = 0;
-    double exec_time;
-
+    double exec_time = 0, exec_time2 = 0;
+    maxOi.val = 0;
+    maxOi.indice = 0;
     // Test du Nombre de Parametres
     if (argc < 6 || argc > 6)
     {
@@ -67,9 +79,13 @@ int main(int argc, char *argv[])
     {
         printf("\nGive Thread number: ");
         scanf("%d", &NUM_THREADS);
+        waitAll = malloc((NUM_THREADS - 1) * sizeof(int));
+        for (i = 0; i < NUM_THREADS; i++)
+            waitAll[i] = 0;
 
-        exec_time = parallel_sensors_deployment(NUM_THREADS);
-        printf("\nParal. Time Exec. = %lf sec\n\n", exec_time);
+        exec_time2 = parallel_sensors_deployment();
+        printf("\nParal. Time Exec. = %lf sec\n\n", exec_time2);
+        free(waitAll);
     }
     break;
 
@@ -91,20 +107,18 @@ int main(int argc, char *argv[])
     return 0;
 }
 
-double parallel_sensors_deployment(int numThreads)
+double parallel_sensors_deployment()
 {
     // Variables Threads
-    pthread_t threads[numThreads];
+    pthread_mutex_init(&mutex_max, NULL);
+    pthread_mutex_init(&mutex_n, NULL);
+    pthread_t threads[NUM_THREADS];
     pthread_attr_t attr;
     pthread_attr_init(&attr);
     pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
-
-    // Varriables de boucles
-    long i, j, t;
-
-    // Variables deploiement
-    int remaining_sensors = 0, indice = 0;
-    float maxO = 0.0;
+    // Varriables de boucle
+    long t;
+    int i;
 
     // variables Temps
     clock_t start, end;
@@ -113,58 +127,45 @@ double parallel_sensors_deployment(int numThreads)
     // Evaluation du Temps
     start = clock();
 
-    // Calcul de Ti and affect 1 to each n[i]
-    for (t = 0; t < numThreads; t++)
-        pthread_create(&threads[t], &attr, par_calculate_Ti, (void *)t);
+    // Calcul du reste de capteurs a deployer
+    parallel_remaining_sensors = N - K;
 
-    remaining_sensors = N - K;
+    // Calcul Parallel
+    for (t = 0; t < NUM_THREADS; t++)
+        pthread_create(&threads[t], &attr, parallel_compute, (void *)t);
 
     /* Free attribute and wait for the other threads */
-    for (t = 0; t < numThreads; t++)
+    for (t = 0; t < NUM_THREADS; t++)
         pthread_join(threads[t], NULL);
-
-    while (remaining_sensors != 0)
-    {
-        // Calcul du Nbr d'Oper. Oi de chaq Bi
-        for (t = 0; t < numThreads; t++)
-            pthread_create(&threads[t], &attr, par_calculate_Oi, (void *)t);
-
-        /* Free attribute and wait for the other threads */
-        for (t = 0; t < numThreads; t++)
-            pthread_join(threads[t], NULL);
-
-        // Remise a 0
-        maxO = 0;
-        indice = 0;
-
-        // Recherche du Nbr d'Oper. Max
-        for (j = 0; j < K; j++)
-        {
-            if (O[j] >= maxO)
-            {
-                maxO = O[j];
-                indice = j;
-            }
-        }
-
-        n[indice] += 1;
-        remaining_sensors -= 1;
-    }
 
     end = clock();
     exec_time = ((double)(end - start)) / CLOCKS_PER_SEC;
+    printf("\nTemps = %lf\n", exec_time);
 
     // printf("\nAfter deployment of N = %d sensors in K = %d Virtual nodes we have:\n", N, K);
     // for (i = 0; i < K; i++)
-    //     printf(" \nVirt. Node %ld \t =    %d sensor(s)\n", i + 1, n[i]);
+    //     printf(" \nVirt. Node %d \t =    %d sensor(s)\n", i + 1, n[i]);
 
+    for (i = 0; i < K; i++)
+        printf(" \nn = %d ", n[i]);
     return exec_time;
 }
 
-void *par_calculate_Ti(void *arg)
+void *parallel_compute(void *arg)
 {
     long debut, fin, idThread, virtNode;
     idThread = (long)arg;
+    double local_max = 0;
+    int local_indice = 0, i, wait = 1;
+    int local_remaining_sensors = parallel_remaining_sensors / NUM_THREADS;
+
+    // variables du calcul de Oi
+    double Ti_bar = 0.0;
+    double Ri_rsc = 0.0;
+    double Ri_ps = 0.0;
+    double Ri_rsnr = 0.0;
+    double Ri_rsf = 0.0;
+    double Ri_rsr = 0.0;
 
     // Calcul des Bornes
     debut = idThread * (K / NUM_THREADS);
@@ -176,7 +177,6 @@ void *par_calculate_Ti(void *arg)
         fin = debut + (K / NUM_THREADS);
 
     // Variables du calcul de Ti
-
     for (virtNode = debut; virtNode < fin; virtNode++)
     {
         T[virtNode] = (lambda / (p + 1)) * ((p / (p + 1)) + (pow(-(p), virtNode + 1) / (p + 1)) + (virtNode + 1));
@@ -184,65 +184,124 @@ void *par_calculate_Ti(void *arg)
         // printf("(%ld , %.2f ) ", virtNode, T[virtNode]);
         n[virtNode] = 1;
     }
-}
 
-void *par_calculate_Oi(void *arg)
-{
-    long debut, fin, idThread, virtNode;
-    idThread = (long)arg;
-
-    // Calcul des Bornes
-    debut = idThread * (K / NUM_THREADS);
-
-    if (idThread == (NUM_THREADS - 1))
-        fin = K;
-    else
-        fin = debut + (K / NUM_THREADS);
-
-    // variables du calcul de Oi
-    double Ti_bar = 0.0;
-    double Ri_rsc = 0.0;
-    double Ri_ps = 0.0;
-    double Ri_rsnr = 0.0;
-    double Ri_rsf = 0.0;
-    double Ri_rsr = 0.0;
-
-    // calcul
-    for (virtNode = debut; virtNode < fin; virtNode++)
+    while (local_remaining_sensors != 0)
     {
-        Ri_ps = 0.0;
-        Ti_bar = 0.0;
-        Ti_bar = T[virtNode] / n[virtNode];
-        Ri_rsc = T[virtNode] * ((n[virtNode] - 1) / n[virtNode]);
 
-        if (virtNode == 0)
-            Ri_ps = ((T[virtNode] - lambda) / n[virtNode]) + (alpha * Ri_rsc);
-
-        if (virtNode > 0 && virtNode < K - 2)
+        // calcul
+        for (virtNode = debut; virtNode < fin; virtNode++)
         {
-            Ri_rsnr = p * T[virtNode - 1];
-            Ri_rsf = T[virtNode + 1] + (p * T[virtNode + 2]);
-            Ri_rsr = ((T[virtNode] - lambda) * (n[virtNode] - 1)) / n[virtNode];
-            Ri_ps = ((T[virtNode] - lambda) / n[virtNode]) + alpha * (Ri_rsr + Ri_rsnr + Ri_rsf + Ri_rsc);
+            Ri_ps = 0.0;
+            Ti_bar = 0.0;
+            Ti_bar = T[virtNode] / n[virtNode];
+            Ri_rsc = T[virtNode] * ((n[virtNode] - 1) / n[virtNode]);
+
+            if (virtNode == 0)
+                Ri_ps = ((T[virtNode] - lambda) / n[virtNode]) + (alpha * Ri_rsc);
+
+            if (virtNode > 0 && virtNode < K - 2)
+            {
+                Ri_rsnr = p * T[virtNode - 1];
+                Ri_rsf = T[virtNode + 1] + (p * T[virtNode + 2]);
+                Ri_rsr = ((T[virtNode] - lambda) * (n[virtNode] - 1)) / n[virtNode];
+                Ri_ps = ((T[virtNode] - lambda) / n[virtNode]) + alpha * (Ri_rsr + Ri_rsnr + Ri_rsf + Ri_rsc);
+            }
+
+            if (virtNode == K - 2)
+            {
+                Ri_rsnr = p * T[virtNode - 1];
+                Ri_rsf = T[virtNode + 1];
+                Ri_rsr = ((T[virtNode] - lambda) * (n[virtNode] - 1)) / n[virtNode];
+                Ri_ps = ((T[virtNode] - lambda) / n[virtNode]) + alpha * (Ri_rsr + Ri_rsnr + Ri_rsf + Ri_rsc);
+            }
+
+            // pour K - 1, Ri_rsf = 0
+            if (virtNode == K - 1)
+            {
+                Ri_rsnr = p * T[virtNode - 1];
+                Ri_rsr = ((T[virtNode] - lambda) * (n[virtNode] - 1)) / n[virtNode];
+                Ri_ps = ((T[virtNode] - lambda) / n[virtNode]) + alpha * (Ri_rsr + Ri_rsnr + Ri_rsc);
+            }
+
+            O[virtNode] = Ti_bar + Ri_ps;
+        } // end for
+
+        local_max = 0;
+        local_indice = 0;
+
+        // Recherche du Max local
+        for (virtNode = debut; virtNode < fin; virtNode++)
+        {
+            if (O[virtNode] >= local_max)
+            {
+                local_max = O[virtNode];
+                local_indice = virtNode;
+            }
         }
 
-        if (virtNode == K - 2)
+        // printf("id %ld maxlocal = %f \n", idThread, local_max);
+        // system("sleep 3");
+
+        // MAJ du max global
+        if (maxOi.val <= local_max)
         {
-            Ri_rsnr = p * T[virtNode - 1];
-            Ri_rsf = T[virtNode + 1];
-            Ri_rsr = ((T[virtNode] - lambda) * (n[virtNode] - 1)) / n[virtNode];
-            Ri_ps = ((T[virtNode] - lambda) / n[virtNode]) + alpha * (Ri_rsr + Ri_rsnr + Ri_rsf + Ri_rsc);
+            pthread_mutex_lock(&mutex_max);
+            maxOi.val = local_max;
+            maxOi.indice = local_indice;
+            maxOi.id = idThread;
+            pthread_mutex_unlock(&mutex_max);
         }
 
-        // pour K - 1, Ri_rsf = 0
-        if (virtNode == K - 1)
+        // Attend les autres Threads
+        waitAll[idThread] = 1;
+
+        while (wait == 1)
         {
-            Ri_rsnr = p * T[virtNode - 1];
-            Ri_rsr = ((T[virtNode] - lambda) * (n[virtNode] - 1)) / n[virtNode];
-            Ri_ps = ((T[virtNode] - lambda) / n[virtNode]) + alpha * (Ri_rsr + Ri_rsnr + Ri_rsc);
+            wait = 0;
+
+            for (i = 0; i < NUM_THREADS; i++)
+                if (waitAll[i] == 0)
+                {
+                    wait = 1;
+                    // break;
+                }
         }
 
-        O[virtNode] = Ti_bar + Ri_ps;
+        // printf("%ld maxOi = %f \n", maxOi.id, maxOi.val);
+        // system("sleep 3");
+
+        // wait = 1;
+        if (maxOi.id == idThread)
+        {
+            waitAll[idThread] = 0;
+            pthread_mutex_lock(&mutex_n);
+            n[maxOi.indice] += 1;
+            pthread_mutex_unlock(&mutex_n);
+
+            pthread_mutex_lock(&mutex_max);
+            maxOi.val = 0;
+            maxOi.indice = 0;
+            maxOi.id = -1;
+            pthread_mutex_unlock(&mutex_max);
+        }
+
+        // waitAll[idThread] = 1;
+
+        // while (wait == 1)
+        // {
+        //     wait = 0;
+
+        //     for (i = 0; i < NUM_THREADS; i++)
+        //         if (waitAll[i] == 0)
+        //         {
+        //             wait = 1;
+        //             // break;
+        //         }
+        // }
+
+        local_remaining_sensors -= 1;
+        waitAll[idThread] = 0;
+        wait = 1;
     }
 }
 
@@ -298,6 +357,8 @@ double seq_sensors_deployment()
     // for (i = 0; i < K; i++)
     //     printf(" \nVirt. Node %d \t =    %d sensor(s)\n", i + 1, n[i]);
 
+    // for (i = 0; i < K; i++)
+    //     printf(" \nn = %d ", n[i]);
     return exec_time;
 }
 
