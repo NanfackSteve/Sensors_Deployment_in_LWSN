@@ -187,7 +187,7 @@ void *parallel_compute(void *arg)
 
     while (local_remaining_sensors != 0)
     {
-
+        waitAll[idThread] = 0;
         // calcul
         for (virtNode = debut; virtNode < fin; virtNode++)
         {
@@ -273,7 +273,7 @@ void *parallel_compute(void *arg)
         // wait = 1;
         if (maxOi.id == idThread)
         {
-            waitAll[idThread] = 0;
+            // waitAll[idThread] = 0;
             pthread_mutex_lock(&mutex_n);
             n[maxOi.indice] += 1;
             pthread_mutex_unlock(&mutex_n);
@@ -300,7 +300,7 @@ void *parallel_compute(void *arg)
         // }
 
         local_remaining_sensors -= 1;
-        waitAll[idThread] = 0;
+
         wait = 1;
     }
 }
