@@ -251,7 +251,7 @@ void *parallel_compute(void *arg)
             maxOi.id = idThread;
             pthread_mutex_unlock(&mutex_max);
         }
-
+        //
         // Attend les autres Threads
         waitAll[idThread] = 1;
 
