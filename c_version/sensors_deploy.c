@@ -4,14 +4,6 @@
 #include <sys/time.h>
 #include <pthread.h>
 
-typedef struct
-{
-    double val;
-    int indice;
-    long id;
-} maxOi_t;
-
-maxOi_t maxOi;
 int N, K, lambda;
 float alpha;
 float p;
@@ -33,8 +25,7 @@ int main(int argc, char *argv[])
 {
     int i = 0, filenumber = 0, choice = 0;
     double exec_time = 0, exec_time2 = 0;
-    maxOi.val = 0;
-    maxOi.indice = 0;
+
     // Test du Nombre de Parametres
     if (argc < 6 || argc > 6)
     {
@@ -165,7 +156,6 @@ void *parallel_compute(void *arg)
     {
         T[virtNode] = (lambda / (p + 1)) * ((p / (p + 1)) + (pow(-(p), virtNode + 1) / (p + 1)) + (virtNode + 1));
 
-        // printf("(%ld , %.2f ) ", virtNode, T[virtNode]);
         n[virtNode] = 1;
     }
 
