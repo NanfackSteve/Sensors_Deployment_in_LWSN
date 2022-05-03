@@ -1,20 +1,9 @@
-CC = gcc # compilateur a utiliser
-EXEC_S = sequential_deploy.exe # nom du programme (a generer)
-EXEC_P = parallel_deploy.exe  
-SCRIPT_P = ./parallel_version/parallel_n_deploy.sh #nom du prog
-SCRIPT_S = ./sequential_version/sequential_n_deploy.sh 
-SCRIPT_SP = par_vs_seq.sh
+SCRIPT = ./graph.sh #nom du prog
+TIME_S = seq_time.dat 
+TIME_P = parallel_time.dat
 
-all : $(EXEC_P) $(EXEC_S) $(SCRIPT_S) $(SCRIPT_P) $(SCRIPT_SP) #en faisant un make all cest $FILE qui s'execute
-	$(SCRIPT_S)
-	$(SCRIPT_P)
-	./$(SCRIPT_SP) ./parallel_version/parallel_datas_times.dat ./sequential_version/sequential_datas_times.dat
-
-$(EXEC_S) : ./sequential_version/sequential_deploy.c
-	$(CC) -o ./sequential_version/$(EXEC_S) ./sequential_version/sequential_deploy.c -lm
-
-$(EXEC_P) : ./parallel_version/parallel_deploy.c
-	$(CC) -o ./parallel_version/$(EXEC_P) ./parallel_version/parallel_deploy.c -lm -lpthread
+all : $(TIME_P) $(TIME_S) $(SCRIPT)
+	$(SCRIPT) $(TIME_P) $(TIME_S)
 
 clean :
 	rm -rf *.o
