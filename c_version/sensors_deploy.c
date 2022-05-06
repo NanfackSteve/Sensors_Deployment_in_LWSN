@@ -142,14 +142,13 @@ double parallel_sensors_deployment()
 
     end = clock();
     exec_time = ((double)(end - start)) / CLOCKS_PER_SEC;
-    printf("\nTemps = %lf\n", exec_time);
 
-    printf("\nAfter deployment of N = %d sensors in K = %d Virtual nodes we have:\n", N, K);
-    for (i = 0; i < K; i++)
-        printf(" \nVirt. Node %d \t =    %d sensor(s)\n", i + 1, n[i]);
+    // printf("\nAfter deployment of N = %d sensors in K = %d Virtual nodes we have:\n", N, K);
+    // for (i = 0; i < K; i++)
+    //     printf(" \nVirt. Node %d \t =    %d sensor(s)\n", i + 1, n[i]);
 
-    for (i = 0; i < K; i++)
-        printf(" \nn = %d ", n[i]);
+    // for (i = 0; i < K; i++)
+    //     printf(" \nn = %d ", n[i]);
     return exec_time;
 }
 
@@ -255,25 +254,12 @@ void *parallel_compute(void *arg)
         }
 
         // Attend les autres Threads
-
-        // while (wait == 1)
-        // {
-        //     wait = 0;
-
-        //     for (i = 0; i < NUM_THREADS; i++)
-        //         if (waitAll[i] == 0)
-        //         {
-        //             wait = 1;
-        //             // break;
-        //         }
-        // }
         pthread_barrier_wait(&barrier);
         // printf("%ld maxOi = %f \n", maxOi.id, maxOi.val);
         //  system("sleep 3");
 
         if (maxOi.id == idThread)
         {
-            // waitAll[idThread] = 0;
             pthread_mutex_lock(&mutex_n);
             n[maxOi.indice] += 1;
             parallel_remaining_sensors -= 1;
@@ -285,6 +271,8 @@ void *parallel_compute(void *arg)
             maxOi.id = -1;
             pthread_mutex_unlock(&mutex_max);
         }
+
+        // Attend les autres Threads
         pthread_barrier_wait(&barrier);
         local_remaining_sensors = parallel_remaining_sensors;
     }
@@ -342,8 +330,8 @@ double seq_sensors_deployment()
     // for (i = 0; i < K; i++)
     //     printf(" \nVirt. Node %d \t =    %d sensor(s)\n", i + 1, n[i]);
 
-    for (i = 0; i < K; i++)
-        printf(" \nn = %d ", n[i]);
+    // for (i = 0; i < K; i++)
+    //     printf(" \nn = %d ", n[i]);
     return exec_time;
 }
 
