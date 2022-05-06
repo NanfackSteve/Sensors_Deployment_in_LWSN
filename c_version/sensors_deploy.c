@@ -119,7 +119,7 @@ double parallel_sensors_deployment()
 
     // variables Temps
     clock_t start, end;
-    double exec_time;
+    double exec_time = 0;
 
     // Evaluation du Temps
     start = clock();
