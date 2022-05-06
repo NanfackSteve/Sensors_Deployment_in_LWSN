@@ -12,7 +12,6 @@ typedef struct
     long id;
 } maxOi_t;
 
-int *waitAll;
 maxOi_t maxOi;
 int N, K, lambda;
 float alpha;
@@ -80,13 +79,9 @@ int main(int argc, char *argv[])
     {
         printf("\nGive Thread number: ");
         scanf("%d", &NUM_THREADS);
-        waitAll = malloc((NUM_THREADS - 1) * sizeof(int));
-        for (i = 0; i < NUM_THREADS; i++)
-            waitAll[i] = 0;
 
         exec_time2 = parallel_sensors_deployment();
         printf("\nParal. Time Exec. = %lf sec\n\n", exec_time2);
-        free(waitAll);
     }
     break;
 
@@ -188,7 +183,6 @@ void *parallel_compute(void *arg)
 
     while (local_remaining_sensors != 0)
     {
-        waitAll[idThread] = 0;
         // calcul
         for (virtNode = debut; virtNode < fin; virtNode++)
         {
