@@ -118,11 +118,11 @@ double parallel_sensors_deployment()
     int i;
 
     // variables Temps
-    clock_t start, end;
+    clock_t start1, end1;
     double exec_time = 0;
 
     // Evaluation du Temps
-    start = clock();
+    start1 = clock();
 
     // Calcul du reste de capteurs a deployer
     parallel_remaining_sensors = N - K;
@@ -135,8 +135,8 @@ double parallel_sensors_deployment()
     for (t = 0; t < NUM_THREADS; t++)
         pthread_join(threads[t], NULL);
 
-    end = clock();
-    exec_time = ((double)(end - start)) / CLOCKS_PER_SEC;
+    end1 = clock();
+    exec_time = ((double)(end1 - start1)) / CLOCKS_PER_SEC;
 
     // printf("\nAfter deployment of N = %d sensors in K = %d Virtual nodes we have:\n", N, K);
     // for (i = 0; i < K; i++)
