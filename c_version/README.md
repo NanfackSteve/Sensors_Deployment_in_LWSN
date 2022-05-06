@@ -13,21 +13,39 @@ The purpose of this version is to <b>compare the execution time</b> of sequentia
 To run all automatically just run `make all` command.
 
 <ul>
-    <li>For parallel_deploy.exe program, use like this:</li>
+    <li>For Sequential deploy, use like this:</li>
 </ul>
 
-`parallel_deploy.exe N K λ α p Thread_number deployment_number`
+`sensors_deploy.exe N K λ α p `
+then choose 1
 
 ```
-./parallel_deploy.exe 30 10 1 0.4 0.5 4 3
+./sensors_deploy.exe 30 10 1 0.4 0.5
+
+Sensors Deployment with N = 30, K = 10, lambda = 1, alpha = 0.4, p = 0.5  
+
+0 - Exit 
+1 - Sequential Deployement 
+2 - Parallel deployement
+
+Enter an option : 1
 ```
 
 <ul>
-    <li>For sequential_deploy.exe program, use like this :</li>
+    <li>For Parallel deploy, use like this :</li>
 </ul>
 
-`sequential_deploy.exe N K λ α p deployment_number`
+`sequential_deploy.exe N K λ α p then choose 2 and enter the number of Thread to use`
 
 ```
-./sequential_deploy.exe 30 10 1 0.4 0.5 7
+./sequential_deploy.exe 30 10 1 0.4 0.5
+Sensors Deployment with N = 30, K = 10, lambda = 1, alpha = 0.4, p = 0.5  
+
+0 - Exit 
+1 - Sequential Deployement 
+2 - Parallel deployement
+
+Enter an option : 2
+
+Give Thread number: 
 ```
