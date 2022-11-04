@@ -191,15 +191,13 @@ def graphic_LWSN_LifeTime(symbol, color):
     for N in sensors_deplyed:
         Si = LWSN(N, 10)
         for K in range(0, 10):
-            Si.n[K] = N/10
-        
+            Si.n[K] = N / 10
+
         for virtual_node in range(0, 10):
             Si.T.append(Si.calculate_T(virtual_node, 1, 0.0))
-        
+
         for virtual_node in range(0, 10):
-                Si.Oi[virtual_node] = Si.calculate_O(
-                    virtual_node, 1, 0.1, 0.0
-                )
+            Si.Oi[virtual_node] = Si.calculate_O(virtual_node, 1, 0.1, 0.0)
         LTi_uniform.append(Si.life_Time(5, 5))
 
     plt.plot(
@@ -230,8 +228,7 @@ def graphic_LWSN_LifeTime_Gain(symbol, color):
     # ------------------ Parametres d'Affichage -------------------
 
     plt.title(
-        "Normalized lifetime virtual node-based: "
-        + "K = 10, p = 0.0",
+        "Normalized lifetime virtual node-based: " + "K = 10, p = 0.0",
         color="m",
     )
     plt.xlabel(" Number of Deployed nodes ")
@@ -244,11 +241,11 @@ def graphic_LWSN_LifeTime_Gain(symbol, color):
 
     sensors_deplyed = [i for i in range(10, 220, 20)]
     alpha_values = [0.0, 0.1, 0.2, 0.8, 1]
-    
-    #r = list()
+
+    # r = list()
 
     for j, alpha in enumerate(alpha_values):
-        
+
         # --- GREEDY
         LTi_greedy = list()
         LTi_uniform = list()
@@ -257,26 +254,24 @@ def graphic_LWSN_LifeTime_Gain(symbol, color):
             Si = LWSN(N, 10)
             Si.sensors_deployment(1, alpha, 0.0)
             LTi_greedy.append(Si.life_Time(5, 5))
-        
+
         # --- UNIFORM
 
         for N in sensors_deplyed:
             Si = LWSN(N, 10)
             for K in range(0, 10):
-                Si.n[K] = N/10
-            
+                Si.n[K] = N / 10
+
             for virtual_node in range(0, 10):
                 Si.T.append(Si.calculate_T(virtual_node, 1, 0.0))
-            
+
             for virtual_node in range(0, 10):
-                    Si.Oi[virtual_node] = Si.calculate_O(
-                        virtual_node, 1, alpha, 0.0
-                    )
+                Si.Oi[virtual_node] = Si.calculate_O(virtual_node, 1, alpha, 0.0)
             LTi_uniform.append(Si.life_Time(5, 5))
 
         # --- Calculate R
 
-        r = [ LTi_greedy[i]/LTi_uniform[i] for i, _ in enumerate(sensors_deplyed) ]
+        r = [LTi_greedy[i] / LTi_uniform[i] for i, _ in enumerate(sensors_deplyed)]
 
         plt.plot(
             sensors_deplyed,
@@ -292,11 +287,11 @@ def graphic_LWSN_LifeTime_Gain(symbol, color):
     plt.grid()
     plt.show()
 
+
 if __name__ == "__main__":
 
     colors = ["red", "blue", "green", "m", "orange", "black"]
     symbols = ["o-", "h", "*-", "s", "p"]
-
     # graphic_LWSN_deployment(symbols, colors)
     # graphic_LWSN_LifeTime(symbols[4], colors[3])
     graphic_LWSN_LifeTime_Gain(symbols, colors)
