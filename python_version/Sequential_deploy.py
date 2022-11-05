@@ -354,15 +354,70 @@ def graphic_LifeTime_Gain_2(K, p, symbol, color):
     plt.grid()
     plt.show()
 
+def graphic_NetwkLenght_Impact(N, p, symbol, color):
+    
+    # ------------------ Parametres d'Affichage -------------------
+
+    plt.title(
+        "Normalized lifetime with Network_Lenght-based: " + "N = {}, p = {}".format(N, p),
+        color="m",
+    )
+    plt.xlabel(" Number of Virtual Nodes ")
+    plt.xlim(0, 100)
+    plt.ylabel(" Normalized Lifetime ")
+
+    # ------------------ Deploiement en fonction de K --------------
+
+    Virtual_nodes_values = [1, 2, 4, 5, 8, 10, 20, 25, 40, 50, 100]
+    alpha_values = [0.2, 0.4, 0.6]
+    r=list()
+    LTi_greedy = list()
+    LTi_uniform = list()
+
+    for j, alpha in enumerate(alpha_values):
+        
+        LTi_greedy.clear()
+        LTi_uniform.clear()
+        r.clear()
+
+        for i, K in enumerate(Virtual_nodes_values):
+            Si = LWSN(N, K)
+
+            Si.greedy_deployment(1, alpha, p)
+            LTi_greedy.append(Si.life_Time(5, 5))
+
+            Si.uniform_deployment(1, alpha, p)
+            LTi_uniform.append(Si.life_Time(5, 5))  
+
+            r.append(LTi_greedy[i] / LTi_uniform[i])
+
+        # -------------------- Construction des Graphes -----------------
+
+        plt.plot(
+            Virtual_nodes_values,
+            r,
+            symbol[j],
+            label="\u03B1 : {}".format(alpha * 1),
+            color=color[j],
+            lw=1,
+            linestyle=linestyles_dict["dashed"],
+        )
+
+    plt.legend()
+    plt.grid()
+    plt.show()
+
+
 if __name__ == "__main__":
 
     colors = ["red", "blue", "green", "m", "orange", "black"]
     symbols = ["o-", "h", "*-", "s", "p"]
     # graphic_greedy_deployment(symbols, colors)
     # graphic_LifeTime(symbols[4])
-    # graphic_LifeTime_Gain(10, 0.5, symbols, colors)
-    graphic_LifeTime_Gain_2(10, 0.5, symbols, colors,)
-    
+    # graphic_LifeTime_Gain(10, 0.0, symbols, colors)
+    # graphic_LifeTime_Gain_2(10, 0.5, symbols, colors,)
+    graphic_NetwkLenght_Impact(200, 0.5, symbols, colors)
+
     # Si = LWSN(30, 10)
     # Si.greedy_deployment(1, 0.4, 0.5)
     # print("Oi= ", Si.Oi)
