@@ -408,6 +408,73 @@ def graphic_NetwkLenght_Impact(N, p, symbol, color):
     plt.show()
 
 
+def graphic_Residual_Energy(N, K, p, Enode):
+
+    # ------------------ Parametres d'Affichage -------------------
+
+    plt.title(
+        "Residual Energy with N = {} K = {}, p = {}".format(N, K, p),
+        color="m",
+    )
+    plt.xlabel(" Virtual Node Index ")
+    plt.xlim(1, 10)
+    plt.ylabel(" Residual energy (%) ")
+    #plt.ylim(0, 100)
+
+     # ------------------ Deploiement en fonction de N K alpha --------------
+
+    virtual_nodes = [i for i in range(1, K+1)]
+    alpha_values = [0.1, 0.4]
+    # r=list()
+    Residual_greedy = list()
+    Residual_uniform = list()
+    
+    for j, alpha in enumerate(alpha_values):
+
+        Residual_greedy.clear()
+        Residual_uniform.clear()
+        
+
+        # Sensors Deployment
+        
+        Si = LWSN(N, K)
+
+        Si.greedy_deployment(1, alpha, p)
+        Si.calculate_Ei(0.0619, 0.004096)
+        Residual_greedy = [(Enode-Ei)*10 for Ei in Si.Ei]
+
+        Si.uniform_deployment(1, alpha, p)
+        Si.calculate_Ei(0.0619, 0.004096)
+        Residual_uniform = [(Enode-Ei)*10 for Ei in Si.Ei]  
+
+            # r.append(LTi_greedy[i] / LTi_uniform[i])
+
+        # -------------------- Construction des Graphes -----------------
+
+        plt.plot(
+            virtual_nodes,
+            Residual_greedy,
+            "o-",
+            label="Greddy:  \u03B1 = {}".format(alpha * 1),
+            color="red",
+            lw=1,
+            linestyle=linestyles_dict["dashed"],
+        )
+
+        plt.plot(
+            virtual_nodes,
+            Residual_uniform,
+            "*-",
+            label="Uniform: \u03B1 = {}".format(alpha * 1),
+            color="blue",
+            lw=1,
+            linestyle=linestyles_dict["dashed"],
+        )
+
+    plt.legend()
+    plt.grid()
+    plt.show()
+
 if __name__ == "__main__":
 
     colors = ["red", "blue", "green", "m", "orange", "black"]
@@ -416,7 +483,8 @@ if __name__ == "__main__":
     # graphic_LifeTime(symbols[4])
     # graphic_LifeTime_Gain(10, 0.0, symbols, colors)
     # graphic_LifeTime_Gain_2(10, 0.5, symbols, colors,)
-    graphic_NetwkLenght_Impact(200, 0.5, symbols, colors)
+    # graphic_NetwkLenght_Impact(200, 0.5, symbols, colors)
+    graphic_Residual_Energy(30, 10, 0.0, 5)
 
     # Si = LWSN(30, 10)
     # Si.greedy_deployment(1, 0.4, 0.5)
