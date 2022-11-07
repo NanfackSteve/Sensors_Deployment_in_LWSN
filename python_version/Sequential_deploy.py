@@ -425,7 +425,6 @@ def graphic_Residual_Energy(N, K, p, Enode):
 
     virtual_nodes = [i for i in range(1, K+1)]
     alpha_values = [0.1, 0.4]
-    # r=list()
     Residual_greedy = list()
     Residual_uniform = list()
     
