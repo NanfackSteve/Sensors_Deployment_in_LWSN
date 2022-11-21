@@ -88,7 +88,8 @@ class LWSN:
             self.T.append(self.calculate_T(virtual_node, lambda_, p))
 
         for virtual_node in range(0, self.K):
-            self.Oi[virtual_node] = self.calculate_O(virtual_node, lambda_, alpha, p)
+            self.Oi[virtual_node] = self.calculate_O(
+                virtual_node, lambda_, alpha, p)
 
     # -------------------------------------------------------------------
 
@@ -215,7 +216,7 @@ def graphic_LifeTime(symbol):
         LTi_greedy.append(Si.life_Time(1, 5)/(24*365))
 
         Si.uniform_deployment(1, 0.1, 0.5)
-        LTi_uniform.append(Si.life_Time(1, 5)/(24*365))   
+        LTi_uniform.append(Si.life_Time(1, 5)/(24*365))
 
     # -------------------- Construction des Graphes -----------------
 
@@ -249,7 +250,8 @@ def graphic_LifeTime_Gain(K, p, symbol, color):
     # ------------------ Parametres d'Affichage -------------------
 
     plt.title(
-        "Normalized lifetime virtual node-based: " + "K = {}, p = {}".format(K, p),
+        "Normalized lifetime virtual node-based: " +
+        "K = {}, p = {}".format(K, p),
         color="m",
     )
     plt.xlabel(" Number of Deployed nodes ")
@@ -262,10 +264,10 @@ def graphic_LifeTime_Gain(K, p, symbol, color):
 
     sensors_deplyed = [i for i in range(10, 220, 20)]
     alpha_values = [0.0, 0.1, 0.2, 0.8, 1]
-    r=list()
+    r = list()
     LTi_greedy = list()
     LTi_uniform = list()
-    
+
     for j, alpha in enumerate(alpha_values):
 
         LTi_greedy.clear()
@@ -280,7 +282,7 @@ def graphic_LifeTime_Gain(K, p, symbol, color):
             LTi_greedy.append(Si.life_Time(5, 5))
 
             Si.uniform_deployment(1, alpha, p)
-            LTi_uniform.append(Si.life_Time(5, 5))  
+            LTi_uniform.append(Si.life_Time(5, 5))
 
             r.append(LTi_greedy[i] / LTi_uniform[i])
 
@@ -300,12 +302,14 @@ def graphic_LifeTime_Gain(K, p, symbol, color):
     plt.grid()
     plt.show()
 
+
 def graphic_LifeTime_Gain_2(K, p, symbol, color):
 
     # ------------------ Parametres d'Affichage -------------------
 
     plt.title(
-        "Normalized lifetime virtual node-based: " + "K = {}, p = {}".format(K, p),
+        "Normalized lifetime virtual node-based: " +
+        "K = {}, p = {}".format(K, p),
         color="m",
     )
     plt.xlabel(" \u03B1 ")
@@ -315,11 +319,11 @@ def graphic_LifeTime_Gain_2(K, p, symbol, color):
     # ------------------ Deploiement en fonction de N --------------
 
     sensors_deplyed = [10, 20, 40, 80, 100]
-    alpha_values = [0.0, 0.2, 0.4, 0.6,0.8, 1]
-    r=list()
+    alpha_values = [0.0, 0.2, 0.4, 0.6, 0.8, 1]
+    r = list()
     LTi_greedy = list()
     LTi_uniform = list()
-    
+
     for j, N in enumerate(sensors_deplyed):
 
         LTi_greedy.clear()
@@ -334,7 +338,7 @@ def graphic_LifeTime_Gain_2(K, p, symbol, color):
             LTi_greedy.append(Si.life_Time(5, 5))
 
             Si.uniform_deployment(1, alpha, p)
-            LTi_uniform.append(Si.life_Time(5, 5))  
+            LTi_uniform.append(Si.life_Time(5, 5))
 
             r.append(LTi_greedy[i] / LTi_uniform[i])
 
@@ -354,12 +358,14 @@ def graphic_LifeTime_Gain_2(K, p, symbol, color):
     plt.grid()
     plt.show()
 
+
 def graphic_NetwkLenght_Impact(N, p, symbol, color):
-    
+
     # ------------------ Parametres d'Affichage -------------------
 
     plt.title(
-        "Normalized lifetime with Network_Lenght-based: " + "N = {}, p = {}".format(N, p),
+        "Normalized lifetime with Network_Lenght-based: " +
+        "N = {}, p = {}".format(N, p),
         color="m",
     )
     plt.xlabel(" Number of Virtual Nodes ")
@@ -370,12 +376,12 @@ def graphic_NetwkLenght_Impact(N, p, symbol, color):
 
     Virtual_nodes_values = [1, 2, 4, 5, 8, 10, 20, 25, 40, 50, 100]
     alpha_values = [0.2, 0.4, 0.6]
-    r=list()
+    r = list()
     LTi_greedy = list()
     LTi_uniform = list()
 
     for j, alpha in enumerate(alpha_values):
-        
+
         LTi_greedy.clear()
         LTi_uniform.clear()
         r.clear()
@@ -387,7 +393,7 @@ def graphic_NetwkLenght_Impact(N, p, symbol, color):
             LTi_greedy.append(Si.life_Time(5, 5))
 
             Si.uniform_deployment(1, alpha, p)
-            LTi_uniform.append(Si.life_Time(5, 5))  
+            LTi_uniform.append(Si.life_Time(5, 5))
 
             r.append(LTi_greedy[i] / LTi_uniform[i])
 
@@ -421,7 +427,7 @@ def graphic_Residual_Energy(N, K, p, Enode):
     plt.ylabel(" Residual energy (%) ")
     #plt.ylim(0, 100)
     symbols_greedy = ['o-', 's']
-    symbols_uniform = ['p','*-']
+    symbols_uniform = ['p', '*-']
 
     # ------------------ Deploiement en fonction de N K alpha --------------
 
@@ -429,14 +435,14 @@ def graphic_Residual_Energy(N, K, p, Enode):
     alpha_values = [0.1, 0.4]
     Residual_greedy = list()
     Residual_uniform = list()
-    
+
     for j, alpha in enumerate(alpha_values):
 
         Residual_greedy.clear()
         Residual_uniform.clear()
         Emax_greedy = 0
         Emax_Uniform = 0
-        
+
         # Sensors Deployment
         Si = LWSN(N, K)
 
@@ -448,7 +454,7 @@ def graphic_Residual_Energy(N, K, p, Enode):
         Si.uniform_deployment(1, alpha, p)
         Si.calculate_Ei(0.0619, 0.004096)
         Emax_Uniform = max(Si.Ei)
-        Residual_uniform = [(1-(Ei/Emax_Uniform))*100 for Ei in Si.Ei]  
+        Residual_uniform = [(1-(Ei/Emax_Uniform))*100 for Ei in Si.Ei]
 
         # -------------------- Construction des Graphes -----------------
 
@@ -476,6 +482,21 @@ def graphic_Residual_Energy(N, K, p, Enode):
     plt.grid()
     plt.show()
 
+
+def graphic_Sink_Impact(N, K, p, alpha):
+
+    # ------------------ Parametres d'Affichage -------------------
+
+    plt.title(
+        "Impact of Sink Position with N = {} | K = {} | p = {}".format(
+            N, K, p),
+        color="m",
+    )
+    plt.xlabel(" Sink position ")
+    plt.xlim(1, 10)
+    plt.ylabel(" Lifetime (Year) ")
+
+
 if __name__ == "__main__":
 
     colors = ["red", "blue", "green", "m", "orange", "black"]
@@ -485,8 +506,5 @@ if __name__ == "__main__":
     # graphic_LifeTime_Gain(10, 0.0, symbols, colors)
     # graphic_LifeTime_Gain_2(10, 0.5, symbols, colors,)
     # graphic_NetwkLenght_Impact(200, 0.5, symbols, colors)
-    graphic_Residual_Energy(30, 10, 0.5, 5)
-
-    # Si = LWSN(30, 10)
-    # Si.greedy_deployment(1, 0.4, 0.5)
-    # print("Oi= ", Si.Oi)
+    # graphic_Residual_Energy(30, 10, 0.5, 5)
+    graphic_Sink_Impact(30, 10, 0.0, 0.1)
